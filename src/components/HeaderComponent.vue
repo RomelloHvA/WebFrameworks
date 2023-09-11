@@ -1,5 +1,5 @@
 <template>
-  <header class="header-container">
+  <header class="header-container bg-dark">
     <img src="../assets/headerLogoTransparant.png" alt="Logo" class="header-logo float-left">
     <img src="../assets/headerLogoTransparant.png" alt="Logo" class="header-logo float-right">
 
@@ -23,7 +23,6 @@ export default {
 .header-container{
   height: 15vh !important;
   width: 100% !important;
-  background-color: #343a40;
 }
 
 .header-text-container{
