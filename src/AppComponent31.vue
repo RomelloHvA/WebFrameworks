@@ -1,6 +1,6 @@
 <template>
+  <HeaderComponent/>
   <NavBar />
-  <HeaderComponent></HeaderComponent>
   <WelcomeComponent></WelcomeComponent>
 </template>
 
