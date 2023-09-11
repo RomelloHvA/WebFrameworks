@@ -1,3 +1,47 @@
 body{
     font-family: Poppins,sans-serif;
 }
+
+
+.brand-selector-section, .city-info-section, .photo-gallery-section {
+    flex: 1;
+    min-width: 29vw;
+    min-height: 70vh;
+    border-top: darkgray 2px solid;
+    color: azure;
+    padding-top: 5px;
+
+}
+
+.photo-gallery-section {
+    flex: 1;
+    min-width: 40vw;
+    max-width: 40vw;
+    min-height: 100vh;
+
+}
+
+.section-title {
+    color: goldenrod;
+}
+
+main {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+@media screen and (max-width: 750px) {
+    main{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+
+    .photo-gallery-section {
+        min-width: 40vw;
+        max-width: 100%;
+        min-height: 100%;
+        order: 1;
+    }
+
+}

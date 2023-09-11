@@ -32,7 +32,7 @@ export default {
 }
 
 .header-logo {
-height: 15vh;
+  height: 15vh;
   width: auto;
 }
 
