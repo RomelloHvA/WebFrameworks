@@ -2,7 +2,12 @@
   <header class="header-container">
     <img src="../assets/headerLogoTransparant.png" alt="Logo" class="header-logo float-left">
     <img src="../assets/headerLogoTransparant.png" alt="Logo" class="header-logo float-right">
-    <h1 class="header-title">Electric scooter title</h1>
+    <section class="header-text-container flex-column">
+      <h2 class="header-title m-0">Electric scooter</h2>
+      <h3 class="float-right">Subtext</h3>
+
+
+    </section>
 
 
   </header>
@@ -17,9 +22,13 @@ export default {
 <style>
 
 .header-container{
-  height: 10vh !important;
+  height: 15vh !important;
   width: 100% !important;
   background-color: #343a40;
+}
+
+.header-text-container{
+  color: goldenrod;
 }
 
 .header-logo {
@@ -31,6 +40,7 @@ height: 100%;
   vertical-align: middle;
   text-align: center;
 }
+
 .float-left{
   float: left;
 }
