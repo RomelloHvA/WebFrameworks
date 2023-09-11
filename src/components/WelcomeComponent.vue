@@ -1,5 +1,7 @@
 <template>
-WelcomeComponent
+  <section class="">
+
+  </section>
 </template>
 
 <script>

@@ -1,7 +1,7 @@
 <template>
   <HeaderComponent/>
   <NavBar />
-  <WelcomeComponent></WelcomeComponent>
+  <WelcomeComponent/>
 </template>
 
 <script>

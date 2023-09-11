@@ -2,11 +2,10 @@
   <header class="header-container">
     <img src="../assets/headerLogoTransparant.png" alt="Logo" class="header-logo float-left">
     <img src="../assets/headerLogoTransparant.png" alt="Logo" class="header-logo float-right">
-    <section class="header-text-container flex-column">
-      <h2 class="header-title m-0">Electric scooter</h2>
-      <h3 class="float-right">Subtext</h3>
 
-
+    <section class="header-text-container">
+      <h2 class="header-title">Electric scooter</h2>
+      <h3 class="float-right header-subtext">De scooter leveraar</h3>
     </section>
 
 
@@ -29,10 +28,12 @@ export default {
 
 .header-text-container{
   color: goldenrod;
+  overflow-block: hidden;
+  padding-bottom: 5px;
 }
 
 .header-logo {
-height: 100%;
+height: 15vh;
   width: auto;
 }
 
@@ -47,6 +48,11 @@ height: 100%;
 
 .float-right {
   float: right;
+}
+@media screen and (max-height: 470px) {
+  .header-subtext{
+    visibility: hidden;
+  }
 }
 
 </style>
