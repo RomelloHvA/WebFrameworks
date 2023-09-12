@@ -1,3 +1,10 @@
+/** This is the NavBar component it handles the navigation bar on the top of the page.  
+ *  @name NavBar
+ *  @author Marco de Boer
+
+*/
+
+
 <template>
     <nav class="navbar navbar-expand-lg bg-dark ">
         <div class="container-fluid ">
