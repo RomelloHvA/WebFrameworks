@@ -53,6 +53,10 @@ export default {
 </script>
 
 <style>
+
+  nav{
+    width: 100%;
+  }
    .nav-link{
        color: white !important;
    }
