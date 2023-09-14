@@ -1,3 +1,9 @@
+/** This is the City info Component
+*  @name CityInfoComponent
+*  @author Romello ten Broeken
+
+*/
+
 <template>
   <section class="city-info-section">
     <h4 class="section-title header-title">City info</h4>

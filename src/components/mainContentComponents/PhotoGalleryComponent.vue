@@ -1,3 +1,9 @@
+/** This is the Photo Gallery Component
+*  @name PhotoGalleryComponent
+*  @author Romello ten Broeken
+
+*/
+
 <template>
   <section class="photo-gallery-section ">
     <h4 class="section-title header-title">Photo gallery</h4>
