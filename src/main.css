@@ -30,6 +30,22 @@ main {
     justify-content: space-evenly;
 }
 
+/*  scrollbar styling from ChatGPT  */
+ ::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background-color: #333; /* Dark color for the scrollbar thumb */
+    border-radius: 6px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Darker color on hover */
+  }
+
 @media screen and (max-width: 750px) {
     main{
         display: flex;

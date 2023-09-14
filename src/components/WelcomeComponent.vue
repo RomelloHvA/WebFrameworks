@@ -1,3 +1,9 @@
+/** This is the Welcome Component
+*  @name WelcomeComponent
+*  @author Romello ten Broeken
+
+*/
+
 <template>
   <main>
     <BrandSelectorComponent/>

@@ -1,4 +1,4 @@
-/** This is the NavBar component it handles the navigation bar on the top of the page.  
+/** This is the NavBar component it creates the navigation bar on the top of the page.  
  *  @name NavBar
  *  @author Marco de Boer
 
