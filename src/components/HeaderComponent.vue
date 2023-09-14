@@ -1,3 +1,9 @@
+/** This is the Header Component this will be shown on top of the page
+*  @name HeaderComponent
+*  @author Romello ten Broeken
+
+*/
+
 <template>
   <header class="header-container bg-dark">
     <img src="../assets/headerLogoTransparant.png" alt="Logo" class="header-logo float-left">

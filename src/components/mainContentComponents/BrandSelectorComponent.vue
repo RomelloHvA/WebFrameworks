@@ -1,3 +1,9 @@
+/** This is the Brand Selector Component
+*  @name BrandSelectorComponent
+*  @author Romello ten Broeken
+
+*/
+
 <template>
   <section class="brand-selector-section">
     <h4 class="section-title header-title">Brand selector:</h4>
