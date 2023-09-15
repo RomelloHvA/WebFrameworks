@@ -33,7 +33,7 @@
             </table>
         </div>
         <div class="d-flex justify-content-end">
-            <button type="button" class="btn newScooterButton" @click="createSampleScooterList(1, scooterList[scooterList.length - 1].id)">New Scooter</button>
+            <button type="button" class="btn newScooterButton" @click="createSampleScooterForList(1, scooterList[scooterList.length - 1].id)">New Scooter</button>
         </div>
     </div>
 </template>
@@ -52,13 +52,13 @@ export default {
     methods: {
 
         /**
-         * This method will create a list of sample scooters
-         * @param {int} amount The amount of scooters to create
-         * @param {int} startId The id to start with
+         * This method will create a list of sample scooters 
+         * @param {number} amount The amount of scooters to create
+         * @param {number} startId The id to start with
          * @author Marco de Boer
          */
 
-        async createSampleScooterList(amount, startId = 3000){
+        async createSampleScooterForList(amount, startId = 3000){
             for(let i = 0; i < amount; i++){
                 startId = startId + Math.floor((Math.random() * 3) + 1);
                 this.scooterList.push(await Scooter.createSampleScooter(startId));
@@ -72,8 +72,7 @@ export default {
     * This method will create a sample list of scooters when the component is created
     */
     created () {
-            this.createSampleScooterList(8);
-            console.log(this.scooterList);
+            this.createSampleScooterForList(8);
         }
     
 }

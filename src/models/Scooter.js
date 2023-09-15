@@ -1,11 +1,11 @@
 /** this class is used to create a scooter object
  * 
- * @param {int} id - the id of the scooter
+ * @param {number} id - the id of the scooter
  * @param {string} tag - the tag of the scooter max 8 characters
  * @param {string} status - the status of the scooter can Be IDLE, IN_USE and MAINTENANCE
  * @param {object} gpsLocation - the gps location of the scooter storing longitude and latitude
- * @param {int} mileage - the mileage of the scooter in km
- * @param {int} batterCharge - the battery charge of the scooter in %
+ * @param {number} mileage - the mileage of the scooter in km
+ * @param {number} batterCharge - the battery charge of the scooter in %
  * 
  * 
  * @returns {object} - a scooter object
@@ -51,6 +51,12 @@ export class Scooter {
     
 }
 
+/** This creates a random status and is used to create a sample scooter
+ * 
+ * @author Marco de Boer
+ * @returns {string} - a random status from the Scooter.Status object
+ */
+
 function createRandomStatus(){
     let statusArray = [Scooter.Status.IDLE, Scooter.Status.IN_USE, Scooter.Status.MAINTENANCE];
     let randomIndex = Math.floor(Math.random() * 3);
@@ -72,7 +78,7 @@ function createRandomGPSLocation(){
 /** This creates a random string with the given length and is used to create a sample scooter
  * 
  * @author From stackoverflow user csharptest.net
- * @param {int} length - the length of the random string
+ * @param {number} length - the length of the random string
  * @returns {string} - a random string with the given length
  */
 function createRandomTag(length) {
