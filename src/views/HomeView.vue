@@ -1,15 +1,16 @@
 <template>
-  <scooters-overview31/>
+  <welcome-component/>
 </template>
 
 <script>
 // @ is an alias to /src
-import ScootersOverview31 from "@/components/scooters/ScootersOverview31";
+import WelcomeComponent from "@/components/WelcomeComponent";
+
 
 export default {
   name: 'HomeView',
   components: {
-    ScootersOverview31
+    WelcomeComponent,
   }
 }
 </script>

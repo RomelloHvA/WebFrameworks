@@ -1,6 +1,14 @@
 <template>
-  <scooters-overview32/>
-  <scooters-detail32/>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm">
+        <scooters-overview32/>
+      </div>
+      <div class="col-sm">
+        <scooters-detail32/>
+      </div>
+    </div>
+  </div>
 </template>
 <script>
 import ScootersOverview32 from "@/components/scooters/ScootersOverview32";
