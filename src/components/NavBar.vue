@@ -15,7 +15,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                      <router-link to="/"><a class="nav-link active" aria-current="page" href="#">Home</a></router-link>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -23,9 +23,9 @@
                         </a>
                         <ul class="dropdown-menu bg-dark">
                             <li><a class="dropdown-item" href="#">Scooters overview</a></li>
-                            <li><a class="dropdown-item" href="#">Scooters details</a></li>
+                            <li><router-link to="/scooterDetail"><a class="dropdown-item" href="#">Scooters details</a></router-link></li>
                             <li><a class="dropdown-item" href="#">Available Scooters</a></li>
-                            <li><a class="dropdown-item" href="#">Abandonned Scooters</a></li>
+                            <li><a class="dropdown-item" href="#">Abandoned Scooters</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
