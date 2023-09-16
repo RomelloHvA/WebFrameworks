@@ -22,7 +22,7 @@ export class Scooter {
     batteryCharge;
 
 
-    static Status = {
+   static Status = {
         IDLE: "IDLE",
         IN_USE: "IN_USE",
         MAINTENANCE: "MAINTENANCE"

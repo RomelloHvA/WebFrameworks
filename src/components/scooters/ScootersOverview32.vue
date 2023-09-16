@@ -1,14 +1,14 @@
 <template>
-  <h5 class="section-title m-lg-3 mx-2 my-1">Scooter Details</h5>
   <div class="container">
     <div class="row">
       <div class="col-sm">
-        <div class="justify-content-center m-auto scooterOverview ">
+        <h5 class="section-title m-lg-3 mx-2 my-1">All scooter details</h5>
+        <div class="justify-content-center m-auto">
           <div class="table-responsive">
             <table class="table table-dark table-hover">
               <thead>
               <tr>
-                <th scope="col">Tag:</th>
+                <th scope="col">Scooter tag:</th>
               </tr>
               </thead>
               <tbody>
@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="col-sm">
-        <scooters-detail32 :data="selectedScooter" />
+        <scooters-detail32 :selected-scooter="selectedScooter" :getScooter="deleteScooterById" />
       </div>
     </div>
   </div>
@@ -45,7 +45,7 @@ export default {
     return {
       scooterList: [],
       scooterStatus: Scooter.Status,
-      selectedScooter: Scooter,
+      selectedScooter: null,
 
     }
   },
@@ -80,14 +80,34 @@ export default {
       }
 
     },
-
+    /**
+     *
+     * @param scooter to be compared to the currently selected scooter
+     * @returns {boolean} returns true if the scooters are the same.
+     * @author Romello ten Broeke
+     */
     isActiveScooter(scooter) {
       return scooter === this.selectedScooter;
     },
-
+    /**
+     *
+     * Adds a new scooter and selects it immediatly afterwards in the table.
+     * @author Romello ten Broeke
+     */
     async handleButtonClick() {
       await this.createSampleScooterForList(1, this.scooterList[this.scooterList.length - 1].id);
       this.scooterClickHandler(this.scooterList[this.scooterList.length - 1 ]);
+    },
+
+    /**
+     * Method for removing the scooter given by the child component.
+     * @param scooterId of the scooter to be removed.
+     * @author Romello ten Broeke
+     */
+    deleteScooterById(scooterId){
+      this.scooterClickHandler(null);
+      // if this was an === it would only keep the scooter that was supposed to be deleted.
+      this.scooterList = this.scooterList.filter(scooter => scooter.id !== scooterId);
     }
 
 

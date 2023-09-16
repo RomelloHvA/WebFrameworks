@@ -16,7 +16,7 @@
                         <th scope="col">Status:</th>
                         <th scope="col">Battery Charge:</th>
                         <th scope="col">GPSLocation:</th>
-                        <th scope="col">Milage:</th>
+                        <th scope="col">Mileage:</th>
                     </tr>
                 </thead>
                 <tbody>
