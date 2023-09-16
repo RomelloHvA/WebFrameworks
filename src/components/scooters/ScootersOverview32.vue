@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="col-sm">
-        <scooters-detail32/>
+        <scooters-detail32 :data="selectedScooter" />
       </div>
     </div>
   </div>
