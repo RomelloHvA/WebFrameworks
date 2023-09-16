@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import ScooterDetailView from "@/views/ScooterDetailView";
 import scootersOverview31 from "@/components/scooters/ScootersOverview31";
+import ScootersOverview32 from "@/components/scooters/ScootersOverview32";
 
 const routes = [
   {
@@ -12,7 +12,7 @@ const routes = [
   {
     path: '/scooterDetail',
     name: 'scooterDetail',
-    component: ScooterDetailView
+    component: ScootersOverview32
   },{
     path: '/scooterOverview',
     name: 'scooterOverview',
