@@ -32,8 +32,9 @@
     </tr>
     <tr>
       <th scope="row">GPS Location:</th>
-      <td><input class="form-control form-control-sm" type="text" placeholder="latitude" v-model="selectedScooter.gpsLocation.latitude"></td>
-      <td><input class="form-control form-control-sm" type="text" placeholder="longitude" v-model="selectedScooter.gpsLocation.longitude"></td>
+      <td><input class="form-control form-control-sm" type="text" placeholder="latitude" v-model="selectedScooter.gpsLocation.latitude">Latitude
+        <input class="form-control form-control-sm" type="text" placeholder="longitude" v-model="selectedScooter.gpsLocation.longitude">Longitude
+      </td>
 
 
     </tr>
