@@ -1,5 +1,5 @@
 <template>
-  <welcome-component/>
+  <WelcomeComponent/>
 </template>
 
 <script>

@@ -23,13 +23,8 @@
                             Scooters
                       </a>
                         <ul class="dropdown-menu bg-dark">
-<<<<<<< HEAD
                             <li><router-link :to="{ name:'ScootersOverview31'}"><a class="dropdown-item">Scooters overview</a></router-link></li>
                             <li><router-link to="/scooterDetail"><a class="dropdown-item" href="#">Scooters details</a></router-link></li>
-=======
-                          <li><router-link exact-active-class="dropdown-item-active" to="/scooters/scooterOverview31" class="dropdown-item">Scooters overview</router-link></li>
-                          <li><router-link exact-active-class="dropdown-item-active" to="/scooters/scooterOverview32" class="dropdown-item">Scooters details</router-link></li>
->>>>>>> 636775b2c773371fd34967cad817d9c9e880cabd
                             <li><a class="dropdown-item" href="#">Available Scooters</a></li>
                             <li><a class="dropdown-item" href="#">Abandoned Scooters</a></li>
                         </ul>
