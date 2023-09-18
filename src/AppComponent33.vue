@@ -11,7 +11,7 @@ import HeaderComponent from "@/components/HeaderComponent";
 import NavBar from "@/components/NavBar";
 
 export default {
-  name: "AppComponent31",
+  name: "AppComponent33",
   components: { HeaderComponent, NavBar },
 
 }
