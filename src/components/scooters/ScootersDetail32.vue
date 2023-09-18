@@ -17,9 +17,8 @@
 
     <tr>
       <th scope="row">Status:</th>
-      <td><select class="form-select w-auto m-lg-3 m-sm-3 mx-2" aria-label="Scooter brand selector">
-        <option selected>{{ this.selectedScooter.status}}</option>
-        <option v-for="(value,key) in scooterStatus" :key="key">{{ value }}</option>
+      <td><select class="form-select w-auto m-lg-3 m-sm-3 mx-2" aria-label="Scooter brand selector" v-model="selectedScooter.status">
+        <option v-for="(value,key) in scooterStatus" :key="key" :value="value">{{ value }}</option>
 
       </select>
       </td>

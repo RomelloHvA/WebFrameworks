@@ -22,7 +22,7 @@
                         Scooters
                         </a>
                         <ul class="dropdown-menu bg-dark">
-                            <li><router-link to="/scooterOverview"><a class="dropdown-item">Scooters overview</a></router-link></li>
+                            <li><router-link :to="{ name:'ScootersOverview31'}"><a class="dropdown-item">Scooters overview</a></router-link></li>
                             <li><router-link to="/scooterDetail"><a class="dropdown-item" href="#">Scooters details</a></router-link></li>
                             <li><a class="dropdown-item" href="#">Available Scooters</a></li>
                             <li><a class="dropdown-item" href="#">Abandoned Scooters</a></li>
