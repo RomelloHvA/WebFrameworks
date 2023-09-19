@@ -15,7 +15,7 @@ const routes = [
     component: ScootersOverview32
   },{
     path: '/scooterOverview',
-    name: 'ScootersOverview31',
+    name: 'scooterOverview',
     component: scootersOverview31
   }
 
