@@ -14,17 +14,15 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                  <router-link to="/" active-class="nav-item-active">
-                    <li class="nav-item">
-                     <a class="nav-link" aria-current="page" href="#">Home</a>
-                    </li></router-link>
+                    <router-link to="/" active-class="nav-item-active">
+                        <li class="nav-item"><a class="nav-link" aria-current="page" href="#">Home</a></li>
+                    </router-link>
                     <li class="nav-item dropdown" :class="{ 'nav-item-active': $route.path.startsWith('/scooters') }">
-                      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Scooters
-                      </a>
+                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Scooters</a>
                         <ul class="dropdown-menu bg-dark">
-                          <li><router-link exact-active-class="dropdown-item-active" to="/scooters/scooterOverview31" class="dropdown-item">Scooters overview</router-link></li>
-                          <li><router-link exact-active-class="dropdown-item-active" to="/scooters/scooterOverview32" class="dropdown-item">Scooters details</router-link></li>
+                          <li><router-link exact-active-class="dropdown-item-active" :to=" { name: 'scooterOverview31' }" class="dropdown-item">Scooters overview</router-link></li>
+                          <li><router-link exact-active-class="dropdown-item-active" :to=" { name: 'scooterOverview32' }" class="dropdown-item">Scooters details (comp)</router-link></li>
+                          <li><router-link exact-active-class="dropdown-item-active" :to=" { name: 'scooterOverview33' }" class="dropdown-item">Scooters details (router)</router-link></li>
                             <li><a class="dropdown-item" href="#">Available Scooters</a></li>
                             <li><a class="dropdown-item" href="#">Abandoned Scooters</a></li>
                         </ul>
@@ -39,7 +37,7 @@
                 <div class="justify-content-end">
                    <div class="d-flex gap-2">
                         <router-link to="/sign-up"><button type="button row" class="btn btn-outline-primary">Sign up</button></router-link>
-                     <router-link to="/sign-in"><button type="button row" class="btn btn-outline-light">Login</button></router-link>
+                        <router-link to="/sign-in"><button type="button row" class="btn btn-outline-light">Login</button></router-link>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '@/views/HomeView.vue'
 import scootersOverview31 from "@/components/scooters/ScootersOverview31";
 import ScootersOverview32 from "@/components/scooters/ScootersOverview32";
+import ScootersOverview33 from "@/components/scooters/ScootersOverview33";
+import ScootersDetail33 from "@/components/scooters/ScootersDetail33";
 import UnknownRouteComponent from "@/components/UnknownRouteComponent";
 
 export const routes = [
@@ -9,20 +11,32 @@ export const routes = [
     path: '/',
     name: 'homeView',
     component: HomeView
+  }, {
+    path: '/scooters/overview33',
+    name: 'scooterOverview33',
+    component: ScootersOverview33,
+    children: [
+      {
+        path: ':id',
+        name: 'scootersDetail33',
+        component: ScootersDetail33,
+        props: true
+      }
+    ]
   },
   {
-    path: '/scooters/scooterOverview32',
+    path: '/scooters/overview32',
     name: 'scooterOverview32',
-    component: ScootersOverview32
+    component: ScootersOverview32,
   },
   {
-    path: '/scooters/scooterOverview31',
+    path: '/scooters/overview31',
     name: 'scooterOverview31',
     component: scootersOverview31
   },
   {
     path: '/:pageMatch(.*)*',
-    name: '404',
+    name: 'UnknownRouteComponent',
     component: UnknownRouteComponent
   },{
     path: '/scooters',
