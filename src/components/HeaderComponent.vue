@@ -84,13 +84,7 @@ export default {
 .float-right {
   float: right;
 }
-@media screen and (max-height: 640px) {
-  .header-subtext{
-    visibility: hidden;
-  }
-}
-
-@media screen and (max-width: 500px){
+@media screen and (max-height: 470px) {
   .header-subtext{
     visibility: hidden;
   }
