@@ -3,7 +3,7 @@ import HomeView from '@/views/HomeView.vue'
 import scootersOverview31 from "@/components/scooters/ScootersOverview31";
 import ScootersOverview32 from "@/components/scooters/ScootersOverview32";
 import ScootersOverview33 from "@/components/scooters/ScootersOverview33";
-import ScootersDetail33 from "@/components/scooters/ScootersDetail33";
+import ScootersDetail32 from "@/components/scooters/ScootersDetail32";
 import UnknownRouteComponent from "@/components/UnknownRouteComponent";
 
 export const routes = [
@@ -18,8 +18,8 @@ export const routes = [
     children: [
       {
         path: ':id',
-        name: 'scootersDetail33',
-        component: ScootersDetail33,
+        name: 'scootersDetail32',
+        component: ScootersDetail32,
         props: true
       }
     ]

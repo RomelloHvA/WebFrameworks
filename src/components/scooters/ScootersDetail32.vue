@@ -66,7 +66,7 @@ export default {
       scooterToDelete: null,
 
     }
-  }
+  },
 }
 </script>
 

@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="col-sm">
-        <router-view />
+        <router-view :selected-scooter="selectedScooter" :getScooter="deleteScooterById"/>
       </div>
     </div>
   </div>
@@ -66,9 +66,9 @@ export default {
 
     /**
      * This method checks if a scooter has been selected or if the same scooter is clicked again.
-     * It will then either set the activeScooterId to the selected scooter or to null if the same scooter is clicked.
-     * @param scooter is the scooter that is selected with a mouseclick
-     * @author Romello ten Broeke
+     * It will then either change the url to the scooter.id or remove the id from the url
+     * @param {Scooter} scooter is the scooter that is selected with a mouseclick
+     * @author Marco de Boer
      */
 
     onSelect(scooter) {
@@ -100,15 +100,23 @@ export default {
 
     /**
      * Method for removing the scooter given by the child component.
-     * @param scooterId of the scooter to be removed.
-     * @author Romello ten Broeke
+     * @param  {Number} scooterId of the scooter to be removed.
+     * @author Marco de Boer
      */
     deleteScooterById(scooterId){
       this.onSelect(null);
       // if this was an === it would only keep the scooter that was supposed to be deleted.
       this.scooterList = this.scooterList.filter(scooter => scooter.id !== scooterId);
+      this.selectedScooter = null;
+      this.onSelect(null);
     },
 
+
+    /** This function finds the scooter from the giving scooter and id in the list Scooters and returns it.
+     * 
+     * @param {Number} scooterId 
+     * @author Marco de Boer
+     */
     findSelectedFromRouteParam(scooterId) {
       return this.scooterList.find(scooter => scooter.id == scooterId);
     }
@@ -118,20 +126,31 @@ export default {
 
   /**
    * This method will create a sample list of scooters when the component is created
+   * 
+   * @author Marco de Boer
    */
-  created() {
-    this.createSampleScooterForList(8);
+  async created() {
+    await this.createSampleScooterForList(8);
+    this.selectedScooter = this.findSelectedFromRouteParam(this.$route.params.id);      
+
   },
 
   watch: {
+
+    /**
+     * This watcher looks for changes to route and if there is a changes searches the id using the function
+     * findSelectedFromRoute and sets the selectedScooter
+     * 
+     * @author Marco de Boer
+     */
     '$route' () {
-      this.selectedScooter = this.findSelectedFromRouteParam(this.$route.params.id);
+      this.selectedScooter = this.findSelectedFromRouteParam(this.$route.params.id);      
     }
   }
 }
 </script>
 
 
-<style scoped>
+<style >
 
 </style>
