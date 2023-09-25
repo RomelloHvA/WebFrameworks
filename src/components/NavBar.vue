@@ -23,7 +23,8 @@
                           <li><router-link exact-active-class="dropdown-item-active" :to=" { name: 'scooterOverview31' }" class="dropdown-item">Scooters overview</router-link></li>
                           <li><router-link exact-active-class="dropdown-item-active" :to=" { name: 'scooterOverview32' }" class="dropdown-item">Scooters details (comp)</router-link></li>
                           <li><router-link exact-active-class="dropdown-item-active" :to=" { name: 'scooterOverview33' }" class="dropdown-item">Scooters details (router)</router-link></li>
-                            <li><a class="dropdown-item" href="#">Available Scooters</a></li>
+                          <li><router-link exact-active-class="dropdown-item-active" :to=" { name: 'scooterOverview34' }" class="dropdown-item">Scooters details (3.4)</router-link></li>
+                          <li><a class="dropdown-item" href="#">Available Scooters</a></li>
                             <li><a class="dropdown-item" href="#">Abandoned Scooters</a></li>
                         </ul>
                     </li>
