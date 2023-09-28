@@ -25,7 +25,8 @@ export class Scooter {
    static Status = {
         IDLE: "IDLE",
         IN_USE: "IN_USE",
-        MAINTENANCE: "MAINTENANCE"
+        MAINTENANCE: "MAINTENANCE",
+       UNAVAILABLE: "UNAVAILABLE"
     }
     
     constructor(id, tag, status, gpsLocation, mileage, batteryCharge) {

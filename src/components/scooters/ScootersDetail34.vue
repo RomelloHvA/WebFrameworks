@@ -44,7 +44,9 @@
       </tr>
       </tbody>
     </table>
-    <button type="button" @click="getScooter(selectedScooter.id)" class="btn btn-danger">Delete Scooter</button>
+    <button type="button" @click="getScooter(selectedScooter.id)" class="btn btn-danger">Delete</button>
+    <button type="button" @click="clearAllFields()" class="btn btn-secondary">Clear</button>
+
   </section>
   <h5 v-else class="section-title">Please select a scooter.</h5>
 
@@ -70,8 +72,26 @@ export default {
   },
 
   methods: {
+    /**
+     * Clones the scooter, so it won't make direct changes to the selected scooter.
+     * @author Romello ten Broeke
+     */
     cloneScooter() {
       this.scooterClone = Scooter.cloneScooter(this.selectedScooter)
+    },
+    /**
+     * Clears all the available scooter attributes by looping through all the keys in the object and setting
+     * the key values to '' whilst still keep
+     * @author Romello ten Broeke
+     */
+    clearAllFields() {
+      this.scooterClone = { ...this.scooterClone }; // Preserve the object reference
+      Object.keys(this.scooterClone).forEach(key => {
+        if (key !== 'status'){
+          this.scooterClone[key] = ''; // Set each property to an empty value
+        }
+      });
+      this.scooterClone.status = 'UNAVAILABLE'
     }
   },
 
