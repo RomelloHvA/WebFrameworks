@@ -1,13 +1,13 @@
 /** this class is used to create a scooter object
- * 
+ *
  * @param {number} id - the id of the scooter
  * @param {string} tag - the tag of the scooter max 8 characters
  * @param {string} status - the status of the scooter can Be IDLE, IN_USE and MAINTENANCE
  * @param {object} gpsLocation - the gps location of the scooter storing longitude and latitude
  * @param {number} mileage - the mileage of the scooter in km
  * @param {number} batterCharge - the battery charge of the scooter in %
- * 
- * 
+ *
+ *
  * @returns {object} - a scooter object
  * @author Marco de Boer
  */
@@ -28,7 +28,7 @@ export class Scooter {
         MAINTENANCE: "MAINTENANCE",
        UNAVAILABLE: "UNAVAILABLE"
     }
-    
+
     constructor(id, tag, status, gpsLocation, mileage, batteryCharge) {
         this.id = id;
         this.tag = tag;
@@ -45,9 +45,17 @@ export class Scooter {
         let gpsLocation = createRandomGPSLocation();
         let mileage = Math.floor(Math.random() * 10000);
         let batteryCharge = Math.floor(Math.random() * 95) + 5;
-        
+
         return new Scooter(id, tag, status, gpsLocation, mileage, batteryCharge);
     }
+
+    /**
+     *
+     * @param scooter the scooter to be cloned.
+     * @returns null if there is no given scooter or if it is undefined. Otherwise returns a cloned scooter
+     * without the ID. To be used for editing a scooter.
+     * @author Romello ten Broeke
+     */
 
     static cloneScooter(scooter){
        if (scooter === null || scooter === undefined){
@@ -55,11 +63,44 @@ export class Scooter {
        }
        return Object.assign(new Scooter(0), scooter);
     }
-    
+    /**
+     * This method checks all the values if they have been edited. Except for the id.
+     * The id is not given in the cloned scooter. The gpslocation has to be checked seperately as it is an object.
+     * It is parsed because after editing it becomes a String.
+     * @returns if the values have been edited.
+     * @author Romello ten Broeke
+     */
+    equals(otherScooter){
+
+        for (const key of Object.keys(this).filter(key => key !== 'id')) {
+            if (key === 'gpsLocation') {
+                if (
+                    (!otherScooter.gpsLocation ||
+                        parseFloat(otherScooter.gpsLocation.latitude) !== this.gpsLocation.latitude ||
+                        parseFloat(otherScooter.gpsLocation.longitude) !== this.gpsLocation.longitude)
+                ) {
+                    return false;
+                }
+            } else if (otherScooter[key] !== this[key]) {
+                return false;
+            }
+        }
+
+        console.log('All checks passed');
+        return true;
+    }
+
+
+    /**
+     * Method for checking if any of the fields are empty or only contain spaces.
+     * @returns if the field is empty or not
+     * @author Romello ten Broeke
+     */
+
 }
 
 /** This creates a random status and is used to create a sample scooter
- * 
+ *
  * @author Marco de Boer
  * @returns {string} - a random status from the Scooter.Status object
  */
@@ -72,7 +113,7 @@ function createRandomStatus(){
 
 /**
  * This creates a random gps location near Amsterdam and is used to create a sample scooter
- * 
+ *
  * @author Marco de Boer
  * @returns {object} - a gps location object with a random latitude and longitude near Amsterdam
  */
@@ -83,7 +124,7 @@ function createRandomGPSLocation(){
 }
 
 /** This creates a random string with the given length and is used to create a sample scooter
- * 
+ *
  * @author From stackoverflow user csharptest.net
  * @param {number} length - the length of the random string
  * @returns {string} - a random string with the given length
