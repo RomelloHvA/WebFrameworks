@@ -45,6 +45,7 @@ export default {
       scooterList: [],
       scooterStatus: Scooter.Status,
       selectedScooter: null,
+      clonedScooter: null
 
     }
   },

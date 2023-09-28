@@ -3,7 +3,7 @@
   <!-- <WelcomeComponent/> -->
   <HeaderComponent/>
   <NavBar />
-  <router-view/>
+  <router-view />
 
 </template>
 

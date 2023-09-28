@@ -48,6 +48,12 @@ export class Scooter {
         return new Scooter(id, tag, status, gpsLocation, mileage, batteryCharge);
     }
 
+    static cloneScooter(scooter){
+       if (scooter === null || scooter === undefined){
+           return null;
+       }
+       return Object.assign(new Scooter(0), scooter);
+    }
     
 }
 
