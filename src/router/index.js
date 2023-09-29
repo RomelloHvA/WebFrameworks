@@ -7,6 +7,7 @@ import ScootersDetail32 from "@/components/scooters/ScootersDetail32";
 import UnknownRouteComponent from "@/components/UnknownRouteComponent";
 import ScootersOverView34 from "@/components/scooters/ScootersOverView34";
 import ScootersDetail34 from "@/components/scooters/ScootersDetail34";
+import NoScooterSelectedComponent from "@/components/scooters/NoScooterSelectedComponent";
 
 export const routes = [
   {
@@ -35,6 +36,11 @@ export const routes = [
         name: 'scootersDetail34',
         component: ScootersDetail34,
         props: true
+      },
+      {
+        path: '',
+        name: 'scootersNoDetail',
+        component: NoScooterSelectedComponent
       }
     ]
   },

@@ -49,27 +49,30 @@
       </tr>
       </tbody>
     </table>
-    <button type="button" :class="{ 'disabled' : !hasChanged}" @click="getScooter(selectedScooter.id)"
+    <button type="button" :class="{ 'disabled' : !hasChanged}" @click="deleteScooter()"
             class="btn btn-danger">Delete
     </button>
     <button type="button" @click="clearAllFields()" class="btn btn-secondary m-1">Clear</button>
-    <button type="button" :class="{ 'disabled' : hasChanged}" @click="cloneScooter()" class="btn btn-secondary">Reset
+    <button type="button" :class="{ 'disabled' : hasChanged}" @click="resetScooter()" class="btn btn-secondary">Reset
     </button>
     <button type="button" :class="{ 'disabled' : hasChanged}" @click="saveScooter()" class="btn btn-success m-1">Save
     </button>
-    <button type="button" @click="clearAllFields()" class="btn btn-warning">Cancel</button>
+    <button type="button" @click="pushRoute()" class="btn btn-warning">Cancel</button>
 
 
   </section>
-  <h5 v-else class="section-title">Please select a scooter.</h5>
+  <NoScooterSelectedComponent/>
 
 </template>
 
 <script>
 import {Scooter} from "@/models/Scooter";
+import router from "@/router";
+import NoScooterSelectedComponent from "@/components/scooters/NoScooterSelectedComponent";
 
 export default {
   name: "ScootersDetail34",
+  components: {NoScooterSelectedComponent},
   props: {
     selectedScooter: Scooter,
     getScooter: Function
@@ -91,11 +94,21 @@ export default {
      * @author Romello ten Broeke
      */
     cloneScooter() {
-      this.scooterClone = Scooter.cloneScooter(this.selectedScooter)
+      if (this.selectedScooter !== null) {
+        this.scooterClone = Scooter.cloneScooter(this.selectedScooter)
+      }
+    },
+    /**
+     * Deletes the selected scooter and unselects it in the route.
+     * @author Romello ten Broeke
+     */
+    deleteScooter(){
+      this.getScooter(this.selectedScooter.id)
+      this.pushRoute()
     },
     /**
      * Clears all the available scooter attributes by looping through all the keys in the object and setting
-     * the key values to '' whilst still keep
+     * the key values to '' whilst still keeping the same id
      * Also initializes the scootergps location if there is none.
      * @author Romello ten Broeke
      */
@@ -114,7 +127,20 @@ export default {
       this.scooterClone.gpsLocation.longitude = 0
       this.scooterClone.status = 'UNAVAILABLE'
     },
-
+    /**
+     * Pushes this route. Helps to unselect scooters
+     * @author Romello ten Broeke
+     */
+    pushRoute(){
+      router.push('/scooters/overview34')
+    },
+    resetScooter(){
+      this.cloneScooter()
+    },
+    /**
+     * Saves the new scooter values to the selected scooter
+     * @author Romello ten Broeke
+     */
     saveScooter() {
       Object.keys(this.scooterClone).forEach(key => {
         if (key !== 'id') {
@@ -122,8 +148,11 @@ export default {
           console.log('Copied to the selected scooter.')
         }
       })
+      this.pushRoute()
     }
   },
+
+
 
   watch: {
     selectedScooter() {
@@ -147,6 +176,3 @@ export default {
 }
 </script>
 
-<style>
-
-</style>

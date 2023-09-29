@@ -57,11 +57,25 @@ export class Scooter {
      * @author Romello ten Broeke
      */
 
-    static cloneScooter(scooter){
-       if (scooter === null || scooter === undefined){
-           return null;
-       }
-       return Object.assign(new Scooter(0), scooter);
+    static cloneScooter(scooter) {
+        if (scooter === null || scooter === undefined) {
+            return null;
+        }
+
+        const clonedScooter = new Scooter(0);
+
+        // Copy the 'gpsLocation' properties
+        if (scooter.gpsLocation) {
+            clonedScooter.gpsLocation = {
+                latitude: scooter.gpsLocation.latitude,
+                longitude: scooter.gpsLocation.longitude
+            };
+        }
+
+        // Copy other properties using Object.assign
+        Object.assign(clonedScooter, scooter);
+
+        return clonedScooter;
     }
     /**
      * This method checks all the values if they have been edited. Except for the id.
@@ -76,27 +90,17 @@ export class Scooter {
             if (key === 'gpsLocation') {
                 if (
                     (!otherScooter.gpsLocation ||
-                        parseFloat(otherScooter.gpsLocation.latitude) !== this.gpsLocation.latitude ||
+                        parseFloat(otherScooter.gpsLocation.latitude) !== this.gpsLocation.latitude) ||
                         parseFloat(otherScooter.gpsLocation.longitude) !== this.gpsLocation.longitude)
-                ) {
+                {
                     return false;
                 }
             } else if (otherScooter[key] !== this[key]) {
                 return false;
             }
         }
-
-        console.log('All checks passed');
         return true;
     }
-
-
-    /**
-     * Method for checking if any of the fields are empty or only contain spaces.
-     * @returns if the field is empty or not
-     * @author Romello ten Broeke
-     */
-
 }
 
 /** This creates a random status and is used to create a sample scooter

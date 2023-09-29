@@ -36,6 +36,7 @@
 
 <script>
 import {Scooter} from "@/models/Scooter";
+import router from "@/router";
 
 export default {
   name: "ScootersOverview34",
@@ -75,8 +76,8 @@ export default {
     onSelect(scooter) {
       if (scooter !== null && scooter !== this.selectedScooter) {
         this.$router.push(this.$route.matched[0].path + "/" + scooter.id);
-      } else if (this.selectedScooter === null){
-        this.$router.push({name: 'scooterOverview34'});
+      } else if (this.selectedScooter === scooter){
+        router.push('/scooters/overview34')
       }
 
     },
