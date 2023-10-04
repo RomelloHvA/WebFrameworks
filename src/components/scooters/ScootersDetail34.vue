@@ -57,7 +57,7 @@
     </button>
     <button type="button" :class="{ 'disabled' : hasChanged}" @click="saveScooter()" class="btn btn-success m-1">Save
     </button>
-    <button type="button" @click="pushRoute()" class="btn btn-warning">Cancel</button>
+    <button type="button" @click="handleCancel()" class="btn btn-warning">Cancel</button>
 
 
   </section>
@@ -83,7 +83,8 @@ export default {
       scooterStatus: Scooter.Status,
       scooterToDelete: null,
       scooterClone: null,
-      cloneGpsLocation: null
+      cloneGpsLocation: null,
+      preventRouterLeaveWarning: false
 
     }
   },
@@ -103,6 +104,10 @@ export default {
      * @author Romello ten Broeke
      */
     deleteScooter(){
+      if(!window.confirm('Are you sure you want to delete this scooter?')) {
+        return
+      }
+
       this.getScooter(this.selectedScooter.id)
       this.pushRoute()
     },
@@ -113,6 +118,10 @@ export default {
      * @author Romello ten Broeke
      */
     clearAllFields() {
+      if (!this.confirmDiscardingChanges()) {
+        return;
+      }
+
       this.scooterClone = {...this.scooterClone}; // Preserve the object reference
       Object.keys(this.scooterClone).forEach(key => {
         if (key !== 'status' && key !== 'gpslocation') {
@@ -128,14 +137,50 @@ export default {
       this.scooterClone.status = 'UNAVAILABLE'
     },
     /**
+     * Handles the cancel button. If the user has unsaved changes, it will ask the user if they want to discard the changes.
+     * @author Marco de Boer
+     */
+    handleCancel () {
+      if(!this.confirmDiscardingChanges()){
+        return
+      }
+      this.pushRoute()
+    },
+    /**
      * Pushes this route. Helps to unselect scooters
      * @author Romello ten Broeke
      */
     pushRoute(){
-      router.push('/scooters/overview34')
+      this.preventRouterLeaveWarning = true
+      router.push('/scooters/overview34').then(() => {
+        this.preventRouterLeaveWarning = false
+      })
     },
     resetScooter(){
+      if(!this.confirmDiscardingChanges()){
+          return
+        }
+
       this.cloneScooter()
+    },
+    /**
+     * Confirms if the user wants to discard the changes made to the scooter.
+     * @author Marco de Boer
+     * @returns {boolean} true if the user wants to discard the changes, false if not.
+     */
+    confirmDiscardingChanges () {
+      if (this.selectedScooter === null || this.scooterClone === null) {
+        return true
+      }
+      if (this.scooterClone.equals(this.selectedScooter)) {
+        return true;
+      }
+
+      if (window.confirm('You have unsaved changes, are you sure you want to discard those?')) {
+          return true;
+      }
+
+      return false;
     },
     /**
      * Saves the new scooter values to the selected scooter
@@ -151,8 +196,36 @@ export default {
       this.pushRoute()
     }
   },
+  beforeRouteLeave (to, from, next) {
+    console.log(this.preventRouterLeaveWarning)
+    if (this.preventRouterLeaveWarning) {
+      next()
+    } else {
 
-
+      if(!this.confirmDiscardingChanges()){
+        next(false)
+        return
+      }
+      next()
+    } 
+  },
+  beforeRouteUpdate (to, from, next) {
+    if (this.preventRouterLeaveWarning) {
+      next()
+    } else {
+      if(!this.confirmDiscardingChanges()){
+        next(false)
+        return
+      }
+      next()
+    }
+  },
+  mounted() {
+    window.addEventListener('beforeunload', this.confirmDiscardingChanges)
+  },
+  beforeUnmount() {
+    window.removeEventListener('beforeunload', this.confirmDiscardingChanges)
+  },
 
   watch: {
     selectedScooter() {
