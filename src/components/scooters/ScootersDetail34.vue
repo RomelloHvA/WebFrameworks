@@ -169,10 +169,10 @@ export default {
      * @returns {boolean} true if the user wants to discard the changes, false if not.
      */
     confirmDiscardingChanges () {
-      if (this.selectedScooter === null || this.scooterClone === null) {
+      if (this.selectedScooter === null || this.scooterClone === null || this.scooterClone === undefined) {
         return true
       }
-      if (this.scooterClone.equals(this.selectedScooter)) {
+      if (this.selectedScooter.equals(this.scooterClone)) {
         return true;
       }
 
