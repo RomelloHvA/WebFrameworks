@@ -11,6 +11,11 @@ public class Scooter {
     private int mileage;
     private int batteryCharge;
 
+    /**
+     *
+     * This constructor is used when parsing json to a new scooter instance.
+     */
+
     public Scooter(long id, String tag, Status status, GPSLocation gpsLocation, int mileage, int batteryCharge) {
         this.id = id;
         this.tag = tag;
