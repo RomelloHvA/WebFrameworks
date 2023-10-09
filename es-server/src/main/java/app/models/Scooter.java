@@ -1,15 +1,24 @@
 package app.models;
 
+import java.util.Random;
+
 public class Scooter {
     private long id;
     private String tag;
-    private String status;
+    private Status status;
     private GPSLocation gpsLocation;
     private int mileage;
     private int batteryCharge;
 
     public enum Status {
-        IDLE, IN_USE, MAINTENANCE, UNAVAILABLE
+        IDLE, IN_USE, MAINTENANCE, UNAVAILABLE;
+
+        private static final Random PRNG = new Random();
+
+        public static Status randomStatus(){
+            Status[] statusses = values();
+            return statusses[PRNG.nextInt(statusses.length)];
+        }
     }
 
     public Scooter(String tag) {
@@ -23,7 +32,7 @@ public class Scooter {
     public static Scooter createSampleScooter(long id){
         Scooter scooter = new Scooter(id);
         scooter.setTag(createRandomTag(8));
-        scooter.setStatus("IN_USE");
+        scooter.setStatus(Status.randomStatus());
         scooter.setGPSLocation(GPSLocation.createRandomGPSLocation());
         scooter.setMileage((int) Math.round(Math.random() * 10000));
         scooter.setBatteryCharge((int) Math.floor(Math.random() * 95) + 5);
@@ -51,7 +60,7 @@ public class Scooter {
         this.tag = tag;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -71,7 +80,7 @@ public class Scooter {
         return tag;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
