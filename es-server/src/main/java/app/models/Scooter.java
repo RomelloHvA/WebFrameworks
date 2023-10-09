@@ -11,6 +11,15 @@ public class Scooter {
     private int mileage;
     private int batteryCharge;
 
+    public Scooter(long id, String tag, Status status, GPSLocation gpsLocation, int mileage, int batteryCharge) {
+        this.id = id;
+        this.tag = tag;
+        this.status = status;
+        this.gpsLocation = gpsLocation;
+        this.mileage = mileage;
+        this.batteryCharge = batteryCharge;
+    }
+
     public enum Status {
         IDLE, IN_USE, MAINTENANCE, UNAVAILABLE;
 
