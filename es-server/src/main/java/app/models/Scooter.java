@@ -1,6 +1,7 @@
 package app.models;
 
 import java.util.Random;
+import java.util.random.RandomGenerator;
 
 public class Scooter {
     private long id;
@@ -52,7 +53,7 @@ public class Scooter {
         return result;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
