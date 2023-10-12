@@ -25,8 +25,8 @@ public class GPSLocation {
     }
 
     public static GPSLocation createRandomGPSLocation(){
-        double latitude = Math.round((Math.random() * (0.08) + 52.3000)* 10000) / 10000;
-        double longitude = Math.round((Math.random() * (0.2) + 4.8) * 10000) / 10000;
+        double latitude = Math.round((Math.random() * (0.08) + 52.3000)* 10000.0) / 10000.0;
+        double longitude = Math.round((Math.random() * (0.2) + 4.8) * 10000.0) / 10000.0;
         return new GPSLocation(latitude, longitude);
     }
 

@@ -65,7 +65,7 @@ public class ScootersRepositoryMock implements ScootersRepository{
             scooterToEdit.setTag(scooter.getTag());
             scooterToEdit.setStatus(scooter.getStatus());
             scooterToEdit.setMileage(scooter.getMileage());
-            scooterToEdit.setGPSLocation(scooter.getLocation());
+            scooterToEdit.setGPSLocation(scooter.getGpsLocation());
             scooterToEdit.setBatteryCharge(scooter.getBatteryCharge());
             //Returns the changed scooter.
             return scooterToEdit;

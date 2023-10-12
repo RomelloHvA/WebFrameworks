@@ -2,9 +2,7 @@ package app.models;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import javax.swing.text.View;
 import java.util.Random;
-import java.util.random.RandomGenerator;
 
 public class Scooter {
     @JsonView(Views.Summary.class)
@@ -110,7 +108,7 @@ public class Scooter {
         return status;
     }
 
-    public GPSLocation getLocation() {
+    public GPSLocation getGpsLocation() {
         return gpsLocation;
     }
 
@@ -132,7 +130,7 @@ public class Scooter {
                 "id=" + id +
                 ", tag='" + tag + '\'' +
                 ", status='" + status + '\'' +
-                ", location='" + gpsLocation + '\'' +
+                ", gpsLocation='" + gpsLocation + '\'' +
                 ", mileage=" + mileage +
                 ", batteryCharge=" + batteryCharge +
                 '}';
