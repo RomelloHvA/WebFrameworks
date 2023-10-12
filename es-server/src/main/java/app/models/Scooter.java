@@ -1,15 +1,26 @@
 package app.models;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
+import javax.swing.text.View;
 import java.util.Random;
 import java.util.random.RandomGenerator;
 
 public class Scooter {
+    @JsonView(Views.Summary.class)
     private long id;
-    private String tag;
-    private Status status;
+    @JsonView(Views.Summary.class) private String tag;
+    @JsonView(Views.Summary.class) private Status status;
     private GPSLocation gpsLocation;
     private int mileage;
-    private int batteryCharge;
+    @JsonView(Views.Summary.class) private int batteryCharge;
+
+    public class Views {
+        public static class Summary {
+
+        }
+
+    }
 
     /**
      *

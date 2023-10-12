@@ -4,6 +4,7 @@ import app.exceptions.PreConditionFailed;
 import app.exceptions.ResourceNotFound;
 import app.models.Scooter;
 import app.repositories.ScootersRepository;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,7 @@ public class ScooterController {
      * @return A list of all scooters in JSON format
      * @author Marco de Boer
      */
-    @GetMapping(path = "all", produces = "application/json")
+    @GetMapping(path = "all",produces = "application/json")
     public List<Scooter> getAllScooters() {
         return scootersRepo.findAll();
     }
@@ -65,6 +66,10 @@ public class ScooterController {
             throw new ResourceNotFound("Can't find scooter with Id:" + id);
         }
     }
+
+    @GetMapping(value = "summary", produces = "application/json")
+    @JsonView(Scooter.Views.Summary.class)
+    public List<Scooter> getScootersSummary() { return scootersRepo.findAll(); }
 
     /**
      * Add a new scooter.
