@@ -80,7 +80,7 @@ public class ScooterController {
         if (id != scooter.getId()){
             throw new PreConditionFailed("ID in URL doesn't match the given scooter ID");
         } else {
-            return ResponseEntity.status(HttpStatus.CREATED).body(scooter);
+            return ResponseEntity.status(HttpStatus.CREATED).body(scootersRepo.save(scooter));
         }
     }
 
