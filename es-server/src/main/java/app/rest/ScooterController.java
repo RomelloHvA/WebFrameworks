@@ -120,13 +120,13 @@ public class ScooterController {
      *
      * @param id The ID of the scooter to delete
      * @return Response indicating the success of the deletion
-     * @throws ResourceNotFound if the scooter with the specified ID is not found
      * @author Romello ten Broeke
      */
     @DeleteMapping("{id}")
-    public ResponseEntity<Object> deleteScooter(@PathVariable long id) throws ResourceNotFound {
+    public ResponseEntity<Object> deleteScooter(@PathVariable long id) {
         if (scootersRepo.findById(id) == null) {
-            throw new ResourceNotFound("Can't delete scooter with ID:" + id);
+            Exception exception = new ResourceNotFound("Id not found:" +id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
         }
         return ResponseEntity.ok(scootersRepo.deleteById(id));
     }
