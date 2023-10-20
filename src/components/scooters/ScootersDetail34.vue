@@ -104,7 +104,7 @@ export default {
      * @author Romello ten Broeke
      */
     deleteScooter(){
-      if(!window.confirm('Are you sure you want to delete this scooter?')) {
+      if(!window.confirm('Are you sure you want to delete this scooter with tag=' + this.selectedScooter.tag + '?' + '\n(id=' + this.selectedScooter.id + ')')) {
         return
       }
 
@@ -169,18 +169,30 @@ export default {
      * @returns {boolean} true if the user wants to discard the changes, false if not.
      */
     confirmDiscardingChanges () {
-      if (this.selectedScooter === null || this.scooterClone === null) {
+      if (this.selectedScooter === null || this.scooterClone === null || this.scooterClone === undefined) {
         return true
       }
-      if (this.scooterClone.equals(this.selectedScooter)) {
+      if (this.selectedScooter.equals(this.scooterClone)) {
         return true;
       }
 
-      if (window.confirm('You have unsaved changes, are you sure you want to discard those?')) {
+      if (window.confirm('Are you sure to discard unsaved changes in scooter with tag=' + this.selectedScooter.tag + '?' + '\n(id=' + this.selectedScooter.id + ')' )) {
           return true;
       }
 
       return false;
+    },
+    /**
+     *  This method is called when the user tries to leave the page. It will ask the user if they want to discard the changes.
+     * @param {*} e event you dont have to give this parameter, it will be given automatically
+     * @autor Marco de Boer
+     */
+    beforeWindowUnload (e) {
+      if(this.selectedScooter.equals(this.scooterClone) || this.selectedScooter === null || this.scooterClone === undefined) {
+        return
+      }
+      e.preventDefault();
+      e.returnValue = 'Are you sure you want to leave this page? You have unsaved changes.';
     },
     /**
      * Saves the new scooter values to the selected scooter
@@ -196,6 +208,13 @@ export default {
       this.pushRoute()
     }
   },
+  /**
+   *  This method is called when the user tries to leave the page. It will ask the user if they want to discard the changes.
+   * @param {*} to 
+   * @param {*} from 
+   * @param {*} next  
+   * @autor Marco de Boer
+   */
   beforeRouteLeave (to, from, next) {
     console.log(this.preventRouterLeaveWarning)
     if (this.preventRouterLeaveWarning) {
@@ -209,6 +228,13 @@ export default {
       next()
     } 
   },
+  /**
+   *  This method is called when the user tries to update the route. It will ask the user if they want to discard the changes.
+   * @param {*} to  
+   * @param {*} from 
+   * @param {*} next   
+   * @author Marco de Boer
+   */
   beforeRouteUpdate (to, from, next) {
     if (this.preventRouterLeaveWarning) {
       next()
@@ -221,10 +247,10 @@ export default {
     }
   },
   mounted() {
-    window.addEventListener('beforeunload', this.confirmDiscardingChanges)
+    window.addEventListener('beforeunload', this.beforeWindowUnload)
   },
   beforeUnmount() {
-    window.removeEventListener('beforeunload', this.confirmDiscardingChanges)
+    window.removeEventListener('beforeunload', this.beforeWindowUnload)
   },
 
   watch: {
