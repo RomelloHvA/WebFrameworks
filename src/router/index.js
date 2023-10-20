@@ -3,10 +3,12 @@ import HomeView from '@/views/HomeView.vue'
 import scootersOverview31 from "@/components/scooters/ScootersOverview31";
 import ScootersOverview32 from "@/components/scooters/ScootersOverview32";
 import ScootersOverview33 from "@/components/scooters/ScootersOverview33";
+import ScootersOverview37 from "@/components/scooters/ScootersOverView37";
 import ScootersDetail32 from "@/components/scooters/ScootersDetail32";
 import UnknownRouteComponent from "@/components/UnknownRouteComponent";
 import ScootersOverView34 from "@/components/scooters/ScootersOverView34";
 import ScootersDetail34 from "@/components/scooters/ScootersDetail34";
+import ScootersDetail37 from "@/components/scooters/ScootersDetail37";
 import NoScooterSelectedComponent from "@/components/scooters/NoScooterSelectedComponent";
 
 export const routes = [
@@ -35,6 +37,23 @@ export const routes = [
         path: ':id',
         name: 'scootersDetail34',
         component: ScootersDetail34,
+        props: true
+      },
+      {
+        path: '',
+        name: 'scootersNoDetail',
+        component: NoScooterSelectedComponent
+      }
+    ]
+  },{
+    path: '/scooters/overview37',
+    name: 'scooterOverview37',
+    component: ScootersOverview37,
+    children: [
+      {
+        path: ':id',
+        name: 'scootersDetail37',
+        component: ScootersDetail37,
         props: true
       },
       {

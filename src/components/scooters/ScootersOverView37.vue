@@ -40,20 +40,39 @@
 <script>
 import {Scooter} from "@/models/Scooter";
 import router from "@/router";
+import {useFetch} from "@/utils/useFetch";
+import {watchEffect} from "vue";
 
 export default {
-  name: "ScootersOverview34",
+  name: "ScootersOverview37",
   components: {},
   data() {
     return {
       scooterList: [],
       scooterStatus: Scooter.Status,
       selectedScooter: null,
-      clonedScooter: null
+      clonedScooter: null,
+      data: null,
+      isPending: false,
+      error: null
 
     }
   },
+
   methods: {
+
+    async asyncfindAll() {
+      const { data, isPending, error } = await useFetch('/scooters')
+      this.data = data.value
+      this.isPending = isPending.value
+      this.error = error.value
+
+      watchEffect(() => {
+        this.data = data.value
+        this.isPending = isPending.value
+        this.error = error.value
+      })
+    },
 
     /**
      * This method will create a list of sample scooters
@@ -136,6 +155,7 @@ export default {
    */
   async created() {
     await this.createSampleScooterForList(8);
+    await this.asyncfindAll()
     this.selectedScooter = this.findSelectedFromRouteParam(this.$route.params.id);
   },
 
