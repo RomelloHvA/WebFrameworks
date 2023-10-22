@@ -1,8 +1,7 @@
 <template>
-  <div>
-
-  </div>
-  <div class="container">
+  <div v-if="fetchIsPending">Loading...</div>
+  <div v-else-if="fetchError">Error: {{ fetchError }}</div>
+  <div v-else class="container">
     <div class="row">
       <div class="col-sm">
         <h5 class="section-title m-lg-3 mx-2 my-1">All scooter details</h5>
@@ -30,7 +29,7 @@
         </div>
       </div>
       <div class="col-sm">
-        <router-view :selected-scooter="selectedScooter" :getScooter="deleteScooterById"/>
+        <router-view :getScooter="deleteScooterById"/>
       </div>
     </div>
   </div>
@@ -40,53 +39,30 @@
 <script>
 import {Scooter} from "@/models/Scooter";
 import router from "@/router";
-import {useFetch} from "@/utils/useFetch";
-import {watchEffect} from "vue";
+import { inject} from "vue";
 
 export default {
   name: "ScootersOverview37",
+  inject: ['scootersService'],
   components: {},
   data() {
     return {
       scooterList: [],
       scooterStatus: Scooter.Status,
       selectedScooter: null,
-      clonedScooter: null,
-      data: null,
-      isPending: false,
-      error: null
+      clonedScooter: null
 
     }
   },
 
+  setup () {
+    
+    const { scooters, fetchIsPending, fetchError } = inject('scootersService').asyncFindAll()
+
+    return { scooters, fetchIsPending, fetchError }
+  },
+
   methods: {
-
-    async asyncfindAll() {
-      const { data, isPending, error } = await useFetch('/scooters')
-      this.data = data.value
-      this.isPending = isPending.value
-      this.error = error.value
-
-      watchEffect(() => {
-        this.data = data.value
-        this.isPending = isPending.value
-        this.error = error.value
-      })
-    },
-
-    /**
-     * This method will create a list of sample scooters
-     * @param {number} amount The amount of scooters to create
-     * @param {number} startId The id to start with
-     * @author Marco de Boer
-     */
-
-    async createSampleScooterForList(amount, startId = 3000) {
-      for (let i = 0; i < amount; i++) {
-        startId = startId + Math.floor((Math.random() * 3) + 1);
-        this.scooterList.push(await Scooter.createSampleScooter(startId));
-      }
-    },
 
     /**
      * This method checks if a scooter has been selected or if the same scooter is clicked again.
@@ -99,7 +75,7 @@ export default {
       if (scooter !== null && scooter !== this.selectedScooter) {
         this.$router.push(this.$route.matched[0].path + "/" + scooter.id);
       } else if (this.selectedScooter === scooter){
-        router.push('/scooters/overview34')
+        router.push('/scooters/overview37')
       }
 
     },
@@ -154,8 +130,6 @@ export default {
    * @author Marco de Boer
    */
   async created() {
-    await this.createSampleScooterForList(8);
-    await this.asyncfindAll()
     this.selectedScooter = this.findSelectedFromRouteParam(this.$route.params.id);
   },
 

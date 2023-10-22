@@ -1,6 +1,7 @@
 package app.rest;
 
 import app.exceptions.PreConditionFailed;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import app.exceptions.ResourceNotFound;
 import app.models.Scooter;
 import app.repositories.ScootersRepository;
@@ -17,6 +18,7 @@ import java.util.List;
  *
  * This controller handles HTTP requests related to scooter management.
  */
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/scooters")
 public class ScooterController {

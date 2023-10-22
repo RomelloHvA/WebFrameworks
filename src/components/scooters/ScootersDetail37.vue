@@ -72,9 +72,9 @@ import NoScooterSelectedComponent from "@/components/scooters/NoScooterSelectedC
 
 export default {
   name: "ScootersDetail37",
+  inject: ['scootersService'],
   components: {NoScooterSelectedComponent},
   props: {
-    selectedScooter: Scooter,
     getScooter: Function
   },
 
@@ -84,7 +84,8 @@ export default {
       scooterToDelete: null,
       scooterClone: null,
       cloneGpsLocation: null,
-      preventRouterLeaveWarning: false
+      preventRouterLeaveWarning: false,
+      selectedScooter: null
 
     }
   },
@@ -146,6 +147,7 @@ export default {
       }
       this.pushRoute()
     },
+
     /**
      * Pushes this route. Helps to unselect scooters
      * @author Romello ten Broeke
@@ -156,6 +158,7 @@ export default {
         this.preventRouterLeaveWarning = false
       })
     },
+
     resetScooter(){
       if(!this.confirmDiscardingChanges()){
           return
@@ -194,8 +197,13 @@ export default {
         }
       })
       this.pushRoute()
+    },
+
+    async setSelectedScooter(){
+      this.selectedScooter = await this.scootersService.asyncFindById(this.$route.params.id)
     }
   },
+
   beforeRouteLeave (to, from, next) {
     console.log(this.preventRouterLeaveWarning)
     if (this.preventRouterLeaveWarning) {
@@ -209,6 +217,7 @@ export default {
       next()
     } 
   },
+
   beforeRouteUpdate (to, from, next) {
     if (this.preventRouterLeaveWarning) {
       next()
@@ -220,9 +229,11 @@ export default {
       next()
     }
   },
+
   mounted() {
     window.addEventListener('beforeunload', this.confirmDiscardingChanges)
   },
+
   beforeUnmount() {
     window.removeEventListener('beforeunload', this.confirmDiscardingChanges)
   },
@@ -230,6 +241,16 @@ export default {
   watch: {
     selectedScooter() {
       this.cloneScooter()
+    },
+
+        /**
+     * This watcher looks for changes to route and if there is a changes searches the id using the function
+     * findSelectedFromRoute and sets the selectedScooter
+     *
+     * @author Marco de Boer
+     */
+     '$route' () {
+      this.setSelectedScooter()
     }
   },
   computed: {
@@ -243,8 +264,10 @@ export default {
    * @author Romello ten Broeke
    */
   async created() {
+    this.setSelectedScooter()
     this.cloneScooter()
-  }
+  },
+  
 
 }
 </script>

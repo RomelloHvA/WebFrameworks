@@ -101,6 +101,24 @@ export class Scooter {
         }
         return true;
     }
+
+    /**
+     * This function is used to create a scooter from a JSON object
+     * @param {*} scooterFromJSON in fromat of a JSON object
+     * @author Marco de Boer
+     * @returns 
+     */
+
+    static copyConstructor(scooterFromJSON){
+        let id = scooterFromJSON.id;
+        let tag = scooterFromJSON.tag;
+        let status = scooterFromJSON.status;
+        let gpsLocation = scooterFromJSON.gpsLocation;
+        let mileage = scooterFromJSON.mileage;
+        let batteryCharge = scooterFromJSON.batteryCharge;
+
+        return new Scooter(id, tag, status, gpsLocation, mileage, batteryCharge);
+    }
     /** This creates a random status and is used to create a sample scooter
  *
  * @author Marco de Boer
