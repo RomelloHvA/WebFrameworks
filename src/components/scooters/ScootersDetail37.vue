@@ -1,79 +1,94 @@
 <template>
-  <section v-if="selectedScooter != null">
-    <h5 class="section-title m-lg-3 mx-2 my-1">Scooter details (id= {{ selectedScooter.id }})</h5>
-    <table class="table table-hover table-dark">
-      <thead>
-      <tr>
-        <th scope="col">Property</th>
-        <th scope="col">Value</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <th scope="row">Tag:</th>
-        <td><input class="form-control form-control-sm" type="text" placeholder="Tag" v-model="scooterClone.tag"></td>
+  <div class="container my-3">
+    <div v-if="error">
+      <ErrorComponent :error="error"/>
+    </div>
+    <div v-else-if="isPending">
+      <LoadingComponent/>
+    </div>
+    <div v-else>
+      <section v-if="scooterClone != null">
+        <h5 class="section-title m-lg-3 mx-2 my-1">Scooter details (id= {{ scooterClone.id }})</h5>
+        <table class="table table-hover table-dark">
+          <thead>
+          <tr>
+            <th scope="col">Property</th>
+            <th scope="col">Value</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <th scope="row">Tag:</th>
+            <td><input class="form-control form-control-sm" type="text" placeholder="Tag" v-model="scooterClone.tag"></td>
 
-      </tr>
+          </tr>
 
-      <tr>
-        <th scope="row">Status:</th>
-        <td><select class="form-select w-auto m-lg-3 m-sm-3 mx-2" aria-label="Scooter brand selector"
-                    v-model="scooterClone.status">
-          <option v-for="(value,key) in scooterStatus" :key="key">{{ value }}</option>
+          <tr>
+            <th scope="row">Status:</th>
+            <td><select class="form-select w-auto m-lg-3 m-sm-3 mx-2" aria-label="Scooter brand selector"
+                        v-model="scooterClone.status">
+              <option v-for="(value,key) in scooterStatus" :key="key">{{ value }}</option>
 
-        </select>
-        </td>
+            </select>
+            </td>
 
-      </tr>
-      <tr>
-        <th scope="row">Battery Charge (%):</th>
-        <td><input class="form-control form-control-sm" type="text" placeholder="Battery Charge"
-                   v-model="scooterClone.batteryCharge"></td>
+          </tr>
+          <tr>
+            <th scope="row">Battery Charge (%):</th>
+            <td><input class="form-control form-control-sm" type="text" placeholder="Battery Charge"
+                      v-model="scooterClone.batteryCharge"></td>
 
-      </tr>
-      <tr>
-        <th scope="row">GPS Location:</th>
-        <td><input class="form-control form-control-sm" type="text" placeholder="latitude"
-                   v-model="scooterClone.gpsLocation.latitude">Latitude
-          <input class="form-control form-control-sm" type="text" placeholder="longitude"
-                 v-model="scooterClone.gpsLocation.longitude">Longitude
-        </td>
-
-
-      </tr>
-      <tr>
-        <th scope="row">Total Mileage</th>
-        <td><input class="form-control form-control-sm" type="text" placeholder="Total mileage"
-                   v-model="scooterClone.mileage"></td>
-
-      </tr>
-      </tbody>
-    </table>
-    <button type="button" :class="{ 'disabled' : !hasChanged}" @click="deleteScooter()"
-            class="btn btn-danger">Delete
-    </button>
-    <button type="button" @click="clearAllFields()" class="btn btn-secondary m-1">Clear</button>
-    <button type="button" :class="{ 'disabled' : hasChanged}" @click="resetScooter()" class="btn btn-secondary">Reset
-    </button>
-    <button type="button" :class="{ 'disabled' : hasChanged}" @click="saveScooter()" class="btn btn-success m-1">Save
-    </button>
-    <button type="button" @click="handleCancel()" class="btn btn-warning">Cancel</button>
+          </tr>
+          <tr>
+            <th scope="row">GPS Location:</th>
+            <td><input class="form-control form-control-sm" type="text" placeholder="latitude"
+                      v-model="scooterClone.gpsLocation.latitude">Latitude
+              <input class="form-control form-control-sm" type="text" placeholder="longitude"
+                    v-model="scooterClone.gpsLocation.longitude">Longitude
+            </td>
 
 
-  </section>
-  <NoScooterSelectedComponent/>
+          </tr>
+          <tr>
+            <th scope="row">Total Mileage</th>
+            <td><input class="form-control form-control-sm" type="text" placeholder="Total mileage"
+                      v-model="scooterClone.mileage"></td>
 
+          </tr>
+          </tbody>
+        </table>
+        <button type="button" :class="{ 'disabled' : !hasChanged}" @click="deleteScooter()"
+                class="btn btn-danger">Delete
+        </button>
+        <button type="button" @click="clearAllFields()" class="btn btn-secondary m-1">Clear</button>
+        <button type="button" :class="{ 'disabled' : hasChanged}" @click="resetScooter()" class="btn btn-secondary">Reset
+        </button>
+        <button type="button" :class="{ 'disabled' : hasChanged}" @click="saveScooter()" class="btn btn-success m-1">Save
+        </button>
+        <button type="button" @click="handleCancel()" class="btn btn-warning">Cancel</button>
+
+
+      </section>
+      <section v-else>
+        <NoScooterSelectedComponent/>
+      </section>
+    </div>
+  </div>
 </template>
 
 <script>
 import {Scooter} from "@/models/Scooter";
 import router from "@/router";
 import NoScooterSelectedComponent from "@/components/scooters/NoScooterSelectedComponent";
+import LoadingComponent from "@/components/LoadingComponent.vue";
+import ErrorComponent from "@/components/ErrorComponent.vue";
+import {inject, ref, watchEffect} from "vue";
+import {useRoute} from "vue-router";
 
 export default {
   name: "ScootersDetail37",
   inject: ['scootersService'],
-  components: {NoScooterSelectedComponent},
+  components: { NoScooterSelectedComponent, LoadingComponent, ErrorComponent },
   props: {
     getScooter: Function
   },
@@ -84,10 +99,24 @@ export default {
       scooterToDelete: null,
       scooterClone: null,
       cloneGpsLocation: null,
-      preventRouterLeaveWarning: false,
-      selectedScooter: null
-
+      preventRouterLeaveWarning: false
     }
+  },
+
+  async setup(){
+    const loaded = ref(false)
+    const scooterService = inject('scootersService')
+    const route = useRoute()
+    const routeScooterId = ref(route.params.id)
+
+    const {scooter, isPending, error, load, scooterId } = await scooterService.asyncFindById(routeScooterId.value)
+
+    load().then( () => {
+      loaded.value = true
+      console.log(scooter)
+    })
+
+    return { scooter, isPending, error,load , loaded, scooterId }
   },
 
   methods: {
@@ -95,9 +124,10 @@ export default {
      * Clones the scooter, so it won't make direct changes to the selected scooter.
      * @author Romello ten Broeke
      */
-    cloneScooter() {
-      if (this.selectedScooter !== null) {
-        this.scooterClone = Scooter.cloneScooter(this.selectedScooter)
+    async cloneScooter() {
+      if (this.scooter !== null) {
+        this.scooterClone = Scooter.cloneScooter(this.scooter)
+        console.log('Cloned scooter ' + this.scooter.id + ' to scooterClone.')
       }
     },
     /**
@@ -109,7 +139,7 @@ export default {
         return
       }
 
-      this.getScooter(this.selectedScooter.id)
+      this.getScooter(this.scooter.id)
       this.pushRoute()
     },
     /**
@@ -172,10 +202,10 @@ export default {
      * @returns {boolean} true if the user wants to discard the changes, false if not.
      */
     confirmDiscardingChanges () {
-      if (this.selectedScooter === null || this.scooterClone === null) {
+      if (this.scooter === null || this.scooterClone === null) {
         return true
       }
-      if (this.scooterClone.equals(this.selectedScooter)) {
+      if (this.scooterClone.equals(this.scooter)) {
         return true;
       }
 
@@ -198,14 +228,15 @@ export default {
       })
       this.pushRoute()
     },
-
-    async setSelectedScooter(){
-      this.selectedScooter = await this.scootersService.asyncFindById(this.$route.params.id)
-    }
+    
+    /** This function finds the scooter from the giving scooter and id in the list Scooters and returns it.
+     *
+     * @param {Number} scooterId
+     * @author Marco de Boer
+     */
   },
 
   beforeRouteLeave (to, from, next) {
-    console.log(this.preventRouterLeaveWarning)
     if (this.preventRouterLeaveWarning) {
       next()
     } else {
@@ -230,8 +261,14 @@ export default {
     }
   },
 
-  mounted() {
+ mounted() {
     window.addEventListener('beforeunload', this.confirmDiscardingChanges)
+
+    watchEffect(async () => {
+      if (this.loaded) {
+        await this.cloneScooter()
+      }
+    })
   },
 
   beforeUnmount() {
@@ -239,10 +276,6 @@ export default {
   },
 
   watch: {
-    selectedScooter() {
-      this.cloneScooter()
-    },
-
         /**
      * This watcher looks for changes to route and if there is a changes searches the id using the function
      * findSelectedFromRoute and sets the selectedScooter
@@ -250,25 +283,15 @@ export default {
      * @author Marco de Boer
      */
      '$route' () {
-      this.setSelectedScooter()
+      this.scooterId = this.$route.params.id
     }
   },
   computed: {
     hasChanged() {
-      return this.selectedScooter.equals(this.scooterClone)
+      return this.scooter.equals(this.scooterClone)
     }
   },
-  /**
-   * Method for cloning the selected scooter in an editable form.
-   * @returns {Promise<void>}
-   * @author Romello ten Broeke
-   */
-  async created() {
-    this.setSelectedScooter()
-    this.cloneScooter()
-  },
   
-
 }
 </script>
 

@@ -1,7 +1,6 @@
 import { ref } from "vue";
 
-export function useFetch(url, object , method = "GET") {
-
+const useFetch = (url, object, method = 'GET') => {
     const data = ref(null);
     const isPending = ref(true);
     const error = ref(null);
@@ -17,26 +16,24 @@ export function useFetch(url, object , method = "GET") {
         fetchOptions.body = JSON.stringify(object);
     }
 
-    fetch(url, fetchOptions)
-    .then( res => {
-        if(!res.ok){
-            throw Error('could not fetch the data for that resource');
-        }
-        return res.json();
-    })
-    .then(json => {
-        data.value = json;
-        isPending.value = false;
-        error.value = null;
-    })
-    .catch((err) => {
-        if(err.name !== 'AbortError'){
+    const load =  async (newUrl = url) => {
+        isPending.value = true;
+        try{
+            const response = await fetch(newUrl, fetchOptions);
+            if(!response.ok){
+                throw Error('Could not fetch the data for that resource');
+            }
+            data.value = await response.json();
+            error.value = null;
+        } catch (err) {
+            error.value = err.message;
+        } finally {
             isPending.value = false;
-            error.value = err.message
-        }else{
-            console.log('fetch aborted');
-        }   
-    })
+        }
+    }
+
     
-    return { data, isPending, error}
+    return { data, isPending, error, load }
 }
+
+export default useFetch

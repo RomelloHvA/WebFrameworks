@@ -18,7 +18,6 @@ import java.util.List;
  *
  * This controller handles HTTP requests related to scooter management.
  */
-@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/scooters")
 public class ScooterController {

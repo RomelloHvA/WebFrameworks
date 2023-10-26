@@ -29,7 +29,7 @@ export class Scooter {
        UNAVAILABLE: "UNAVAILABLE"
     }
 
-    constructor(id, tag, status, gpsLocation, mileage, batteryCharge) {
+    constructor(id, tag, status, gpsLocation = {latitude: 0, longitude: 0}, mileage, batteryCharge) {
         this.id = id;
         this.tag = tag;
         this.status = status;

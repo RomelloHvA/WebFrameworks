@@ -2,7 +2,12 @@
 
   <HeaderComponent/>
   <NavBar />
-  <router-view/>
+  <Suspense>
+    <router-view/>
+    <template #fallback>
+      Loading...
+    </template>
+  </Suspense>
 
 </template>
 
