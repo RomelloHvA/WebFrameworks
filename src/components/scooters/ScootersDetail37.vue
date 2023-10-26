@@ -57,16 +57,33 @@
           </tr>
           </tbody>
         </table>
-        <button type="button" :class="{ 'disabled' : !hasChanged}" @click="deleteScooter()"
-                class="btn btn-danger">Delete
-        </button>
-        <button type="button" @click="clearAllFields()" class="btn btn-secondary m-1">Clear</button>
-        <button type="button" :class="{ 'disabled' : hasChanged}" @click="resetScooter()" class="btn btn-secondary">Reset
-        </button>
-        <button type="button" :class="{ 'disabled' : hasChanged}" @click="saveScooter()" class="btn btn-success m-1">Save
-        </button>
-        <button type="button" @click="handleCancel()" class="btn btn-warning">Cancel</button>
-
+          <button type="button" :class="{ 'disabled' : !hasChanged || pendingBusy}"  @click="deleteScooter()" class="btn btn-danger">
+            <div class="d-flex row">
+            <div class="col">
+              Delete
+            </div>
+            <div v-if="deleteIsPending" class="col spinnerInButton p-0">
+              <div class="spinner-border text-light spinnerInButton" role="status">
+                <span class="sr-only"></span>
+              </div>
+            </div>
+            </div>
+          </button>
+          <button type="button" @click="clearAllFields()" class="btn btn-secondary m-1" :disabled="pendingBusy">Clear</button>
+          <button type="button" :class="{ 'disabled' : hasChanged || pendingBusy}" @click="resetScooter()" class="btn btn-secondary">Reset</button>
+          <button type="button" :class="{ 'disabled' : hasChanged || pendingBusy}" @click="saveScooter(scooterClone)" class="btn btn-success m-1">
+            <div class="d-flex row">
+            <div class="col">
+              Save
+            </div>
+            <div v-if="saveScooterIsPending" class="col spinnerInButton p-0">
+              <div class="spinner-border text-light spinnerInButton" role="status">
+                <span class="sr-only"></span>
+              </div>
+            </div>
+            </div>
+          </button>
+          <button type="button" @click="handleCancel()" class="btn btn-warning">Cancel</button>
 
       </section>
       <section v-else>
@@ -84,39 +101,91 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import ErrorComponent from "@/components/ErrorComponent.vue";
 import {inject, ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
+import {useToast} from 'vue-toast-notification';
 
 export default {
   name: "ScootersDetail37",
   inject: ['scootersService'],
   components: { NoScooterSelectedComponent, LoadingComponent, ErrorComponent },
-  props: {
-    getScooter: Function
-  },
 
   data() {
     return {
       scooterStatus: Scooter.Status,
       scooterToDelete: null,
       scooterClone: null,
-      cloneGpsLocation: null,
-      preventRouterLeaveWarning: false
+      cloneGpsLocation: null
     }
   },
 
-  async setup(){
+  async setup(props,{ emit }){
     const loaded = ref(false)
     const scooterService = inject('scootersService')
     const route = useRoute()
     const routeScooterId = ref(route.params.id)
+    const deleteIsPending = ref(false)
+    const deleteError = ref(null)
+    const saveScooterIsPending = ref(false)
+    const saveScooterError = ref(null)
+    const $toast = useToast()
+    const preventRouterLeaveWarning = ref(false)
 
     const {scooter, isPending, error, load, scooterId } = await scooterService.asyncFindById(routeScooterId.value)
 
+    /**
+     * Loads the selected scooter and sets the loaded value to true when done loading. So the 
+     */
+    
     load().then( () => {
       loaded.value = true
-      console.log(scooter)
     })
+    
 
-    return { scooter, isPending, error,load , loaded, scooterId }
+    /**
+     * Deletes the selected scooter and navigates back to the overview page.
+     * @author Marco de Boer
+     */
+    const deleteScooter = async () => {
+      if(!window.confirm('Are you sure you want to delete this scooter?')) {
+        return
+      }
+      const {isPending, error, load} = await scooterService.asyncDeleteById(scooter.value.id)
+
+      watchEffect(() => {
+        deleteIsPending.value = isPending.value;
+        deleteError.value = error.value;
+      })
+
+      load().then( () => {
+        if(error.value === null){
+          router.push('/scooters/overview37')
+          emit('reloadScooters')
+        }
+      })
+    }
+
+    const saveScooter = async (scooterToSave) => {
+      const {isPending, error, load } = await scooterService.asyncSave(scooterToSave)
+
+      watchEffect(() => {
+        saveScooterIsPending.value = isPending.value;
+        saveScooterError.value = error.value;
+      })
+
+      load().then( async () => {
+        if(error.value === null){
+          preventRouterLeaveWarning.value = true
+          await emit('reloadScooters')
+          await router.push('/scooters/overview37')
+          preventRouterLeaveWarning.value = false
+          $toast.success('Scooter: ' + scooterToSave.id + ' has been saved');
+        } else {
+          $toast.error('Error while saving scooter:' + scooterToSave.id);
+        }
+      })
+
+    }
+
+    return { scooter, isPending, error,load , loaded, scooterId, deleteScooter, deleteIsPending, deleteError, saveScooter, saveScooterIsPending, saveScooterError, preventRouterLeaveWarning}
   },
 
   methods: {
@@ -126,21 +195,8 @@ export default {
      */
     async cloneScooter() {
       if (this.scooter !== null) {
-        this.scooterClone = Scooter.cloneScooter(this.scooter)
-        console.log('Cloned scooter ' + this.scooter.id + ' to scooterClone.')
+        this.scooterClone = await Scooter.cloneScooter(this.scooter)
       }
-    },
-    /**
-     * Deletes the selected scooter and unselects it in the route.
-     * @author Romello ten Broeke
-     */
-    deleteScooter(){
-      if(!window.confirm('Are you sure you want to delete this scooter?')) {
-        return
-      }
-
-      this.getScooter(this.scooter.id)
-      this.pushRoute()
     },
     /**
      * Clears all the available scooter attributes by looping through all the keys in the object and setting
@@ -148,14 +204,13 @@ export default {
      * Also initializes the scootergps location if there is none.
      * @author Romello ten Broeke
      */
-    clearAllFields() {
+     clearAllFields() {
       if (!this.confirmDiscardingChanges()) {
         return;
       }
 
-      this.scooterClone = {...this.scooterClone}; // Preserve the object reference
       Object.keys(this.scooterClone).forEach(key => {
-        if (key !== 'status' && key !== 'gpslocation') {
+        if (key !== 'status' && key !== 'gpslocation' && key !== 'id') {
           this.scooterClone[key] = ''; // Set each property to an empty value
         }
       })
@@ -184,7 +239,7 @@ export default {
      */
     pushRoute(){
       this.preventRouterLeaveWarning = true
-      router.push('/scooters/overview34').then(() => {
+      router.push('/scooters/overview37').then(() => {
         this.preventRouterLeaveWarning = false
       })
     },
@@ -214,28 +269,9 @@ export default {
       }
 
       return false;
-    },
-    /**
-     * Saves the new scooter values to the selected scooter
-     * @author Romello ten Broeke
-     */
-    saveScooter() {
-      Object.keys(this.scooterClone).forEach(key => {
-        if (key !== 'id') {
-          this.selectedScooter[key] = this.scooterClone[key]
-          console.log('Copied to the selected scooter.')
-        }
-      })
-      this.pushRoute()
-    },
-    
-    /** This function finds the scooter from the giving scooter and id in the list Scooters and returns it.
-     *
-     * @param {Number} scooterId
-     * @author Marco de Boer
-     */
+    }
   },
-
+  
   beforeRouteLeave (to, from, next) {
     if (this.preventRouterLeaveWarning) {
       next()
@@ -269,6 +305,8 @@ export default {
         await this.cloneScooter()
       }
     })
+
+
   },
 
   beforeUnmount() {
@@ -282,13 +320,19 @@ export default {
      *
      * @author Marco de Boer
      */
-     '$route' () {
-      this.scooterId = this.$route.params.id
+    '$route' () {
+      if(this.$route.params.id !== undefined){
+        this.scooterId = this.$route.params.id
+      }
     }
   },
+      
   computed: {
     hasChanged() {
       return this.scooter.equals(this.scooterClone)
+    },
+    pendingBusy(){
+      return this.deleteIsPending || this.saveScooterIsPending
     }
   },
   

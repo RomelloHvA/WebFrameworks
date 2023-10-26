@@ -27,22 +27,25 @@
               </table>
             </div>
             <div class="d-flex justify-content-end">
-              <button type="button" class="btn newScooterButton row d-flex" @click="handleNewScooterClick" :disabled="newScooterIsPending">
-                <div class="col">
-                  New Scooter
-                </div>
-                <div v-if="newScooterIsPending" class="col spinnerInButton p-0">
-                  <div class="spinner-border text-light spinnerInButton" role="status">
-                    <span class="sr-only"></span>
+              <button id="newButton" type="button" class="btn newScooterButton " @click="handleNewScooterClick" :disabled="newScooterIsPending">
+                <div class="row d-flex">
+                  <div class="col">
+                    New Scooter
+                  </div>
+                  <div v-if="newScooterIsPending" class="col spinnerInButton p-0">
+                    <div class="spinner-border text-light spinnerInButton" role="status">
+                      <span class="sr-only"></span>
+                    </div>
                   </div>
                 </div>
               </button>
             </div>
+
           </div>
         </div>
         <div class="col-sm">
           <Suspense>
-            <router-view :getScooter="deleteScooterById"/>
+            <router-view @reloadScooters="loadFetch()"/>
           </Suspense>
         </div>
       </div>
@@ -56,6 +59,7 @@ import router from "@/router";
 import {inject, ref, watchEffect} from "vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import ErrorComponent from "../ErrorComponent.vue";
+import {useToast} from 'vue-toast-notification';
 
 export default {
   name: "ScootersOverview37",
@@ -75,10 +79,15 @@ export default {
     const newScooterIsPending = ref(false)
     const newScooterError = ref(null)
     const selectedScooter = ref(null)
+    const $toast = useToast();
 
-    load().then( () => {
-      loaded.value = true
-    })
+    const loadFetch = () => {
+      loaded.value = false
+      load().then( () => {
+        loaded.value = true
+      })
+    }
+    loadFetch()
 
         /**
      *
@@ -98,6 +107,8 @@ export default {
         if(error.value === null){
           await scooters.value.push(scooter.value)
           await onSelect(scooter.value)
+        } else {
+          $toast.error('Error while creating new scooter');
         }
       })
 
@@ -117,11 +128,10 @@ export default {
       }
     }
 
-    return { scooters, isPending, error, loaded, handleNewScooterClick, newScooterIsPending, newScooterError, onSelect, selectedScooter }
+    return { scooters, isPending, error, loaded, handleNewScooterClick, newScooterIsPending, newScooterError, onSelect, selectedScooter, loadFetch }
   },
+
   methods: {
-
-
     /**
      *
      * @param scooter to be compared to the currently selected scooter
@@ -132,20 +142,6 @@ export default {
       return scooter === this.selectedScooter;
     },
 
-    /**
-     * Method for removing the scooter given by the child component.
-     * @param  {Number} scooterId of the scooter to be removed.
-     * @author Marco de Boer
-     */
-    deleteScooterById(scooterId){
-      this.onSelect(null);
-      // if this was an === it would only keep the scooter that was supposed to be deleted.
-      this.scooters = this.scooters.filter(scooter => scooter.id !== scooterId);
-      this.selectedScooter = null;
-      this.onSelect(null);
-    },
-
-
     /** This function finds the scooter from the giving scooter and id in the list Scooters and returns it.
      *
      * @param {Number} scooterId
@@ -154,10 +150,7 @@ export default {
     findSelectedFromRouteParam(scooterId) {
       return this.scooters.find(scooter => scooter.id == scooterId);
     }
-
-
   },
-
   /**
    * This method will create a sample list of scooters when the component is created
    *
@@ -168,7 +161,7 @@ export default {
       if (this.loaded){
         this.selectedScooter = this.findSelectedFromRouteParam(this.$route.params.id);
       }
-    })
+    })   
   },
 
   watch: {
@@ -194,6 +187,15 @@ export default {
 .spinnerInButton {
   max-height: 25px;
   max-width: 25px;
+  margin-right: 5px !important;
 }
+
+.nextButtonDiv{
+  width: fit-content;
+  height: fit-content;
+}
+
+
+
 
 </style>

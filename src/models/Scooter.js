@@ -57,7 +57,7 @@ export class Scooter {
      * @author Romello ten Broeke
      */
 
-    static cloneScooter(scooter) {
+    static async cloneScooter(scooter) {
         if (scooter === null || scooter === undefined) {
             return null;
         }

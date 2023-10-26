@@ -87,7 +87,7 @@ public class ScootersRepositoryMock implements ScootersRepository{
      * @author Romello ten Broeke
      */
     private long generateUniqueId(){
-        return new Random().nextLong();
+        return Math.abs(new Random().nextLong());
     }
 
     /**

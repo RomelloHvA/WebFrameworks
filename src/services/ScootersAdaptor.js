@@ -10,22 +10,6 @@ export class ScootersAdaptor {
         this.resourcesUrl = resourcesUrl;
     }
 
-    async fetchJson(url, options = null) {
-        try {
-            let response = await fetch(url, options);
-            if(response.ok){
-                return await response.json();
-            } else if (!response.ok) {
-                throw Error('Could not fetch the data for that resource');
-            } else {
-                return null
-            }
-        } catch (err) {
-            console.error(err)
-            return null
-        }
-    }
-
     async asyncFindAll(){
         const scooters = ref([])
 
@@ -63,7 +47,6 @@ export class ScootersAdaptor {
     async asyncSave(scooterToSave){
         const scooter = ref(scooterToSave)
 
-        console.log(scooter.value.id)
         const { data, isPending, error, load } = useFetch(this.resourcesUrl + '/' + scooter.value.id, scooter.value, 'POST')
 
         watch(data, (newVal) => {
@@ -73,8 +56,12 @@ export class ScootersAdaptor {
         return { scooter, isPending, error, load }
     }
 
-    // async asyncDeleteById(id){
-    //     const { data, isPending, error} = useFetch('/scooters/delete/' + id, {}, 'DELETE')
-    // }
+    async asyncDeleteById(id){
+        const scooterId = ref(id)
+
+        const { isPending, error, load } = useFetch(this.resourcesUrl + '/' + scooterId.value, {}, 'DELETE')
+
+        return { isPending, error, load }
+    }
 
 }
