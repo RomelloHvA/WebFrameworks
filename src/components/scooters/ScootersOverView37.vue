@@ -44,9 +44,7 @@
           </div>
         </div>
         <div class="col-sm">
-          <Suspense>
             <router-view @reloadScooters="loadFetch()"/>
-          </Suspense>
         </div>
       </div>
     </div>
@@ -56,14 +54,14 @@
 <script>
 import {Scooter} from "@/models/Scooter";
 import router from "@/router";
-import {inject, ref, watchEffect} from "vue";
+import {inject, ref, watchEffect, onBeforeMount} from "vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import ErrorComponent from "../ErrorComponent.vue";
 import {useToast} from 'vue-toast-notification';
+import { useRoute } from 'vue-router'
 
 export default {
   name: "ScootersOverview37",
-  inject: ['scootersService'],
   components: { LoadingComponent, ErrorComponent },
   data() {
     return {
@@ -72,24 +70,72 @@ export default {
     }
   },
 
-  async setup(){
+  setup(){
     const scooterService = inject('scootersService')
-    const loaded = ref(false)
-    const {scooters, isPending, error, load } = await scooterService.asyncFindAll()
     const newScooterIsPending = ref(false)
     const newScooterError = ref(null)
     const selectedScooter = ref(null)
     const $toast = useToast();
+    const scooters = ref([])
+    const isPending = ref(false)
+    const error = ref(null)
+    const load = ref(null)
+    const route = useRoute()
+
+    /**
+     * This method is called before the component is mounted and is a lifecycle hook
+     * It will get all the data attributes from scooterService.asyncFindAll and save them in results
+     * results will contain the following attributes: scooters, isPending, error, load
+     * The results will be watched and the values will be saved in the data attributes of this component
+     * The load function will be called and the selectedScooter will be set to the scooter with the id from the route param
+     * @author Marco de Boer
+     */
+    onBeforeMount(async () => {
+      const results = await scooterService.asyncFindAll()
+
+      load.value = results.load
+
+      watchEffect(() => {
+        scooters.value = results.scooters.value
+        isPending.value = results.isPending.value
+        error.value = results.error.value
+      })
+
+      load.value().then(
+        findSelectedFromRouteParam(route.params.id)
+      )
+    })
+
+
+    /**
+     * This function will find the scooter with the id from the route param
+     * @param {Number} scooterId is the id from the route param
+     * @returns {Scooter} returns the scooter with the id from the route param or null if the scooterId is undefined
+     * @author Marco de Boer
+     */
+    function findSelectedFromRouteParam (scooterId) {
+      if (scooterId === undefined) {
+        return null
+      }
+
+      return scooters.value.find(scooter => scooter.id == scooterId)
+    }
+
+
+
+    /**
+     * This watchEffect will watch the route param and will set the selectedScooter to the scooter with the id from the route param
+     */
+    watchEffect(() => {
+      selectedScooter.value = findSelectedFromRouteParam(route.params.id)
+    })
+
 
     const loadFetch = () => {
-      loaded.value = false
-      load().then( () => {
-        loaded.value = true
-      })
+      load.value()
     }
-    loadFetch()
 
-        /**
+    /**
      *
      * Adds a new scooter and selects it immediatly afterwards in the table.
      * @author Romello ten Broeke
@@ -114,66 +160,28 @@ export default {
 
     }
 
-        /**
+    /**
      * This method checks if a scooter has been selected or if the same scooter is clicked again.
      * It will then either change the url to the scooter.id or remove the id from the url
      * @param {Scooter} scooter is the scooter that is selected with a mouseclick
      * @author Marco de Boer
      */
     const onSelect = async (scooter) => {
-      if (scooter !== null && scooter !== selectedScooter.value) {
+      if (scooter !== null && scooter !== selectedScooter.value || selectedScooter.value === scooter) {
         router.push({ path: `${router.currentRoute.value.matched[0].path}/${scooter.id}` })
-      } else if (selectedScooter.value === scooter){
-        router.push({ path: `${router.currentRoute.value.matched[0].path}/${scooter.id}` });
       }
     }
 
-    return { scooters, isPending, error, loaded, handleNewScooterClick, newScooterIsPending, newScooterError, onSelect, selectedScooter, loadFetch }
-  },
-
-  methods: {
     /**
-     *
      * @param scooter to be compared to the currently selected scooter
      * @returns {boolean} returns true if the scooters are the same.
      * @author Romello ten Broeke
      */
-    isActiveScooter(scooter) {
-      return scooter === this.selectedScooter;
-    },
-
-    /** This function finds the scooter from the giving scooter and id in the list Scooters and returns it.
-     *
-     * @param {Number} scooterId
-     * @author Marco de Boer
-     */
-    findSelectedFromRouteParam(scooterId) {
-      return this.scooters.find(scooter => scooter.id == scooterId);
+    const isActiveScooter = (scooter) => {
+      return scooter === selectedScooter.value;
     }
-  },
-  /**
-   * This method will create a sample list of scooters when the component is created
-   *
-   * @author Marco de Boer
-   */
-  async mounted() {
-    watchEffect (() => {
-      if (this.loaded){
-        this.selectedScooter = this.findSelectedFromRouteParam(this.$route.params.id);
-      }
-    })   
-  },
 
-  watch: {
-    /**
-     * This watcher looks for changes to route and if there is a changes searches the id using the function
-     * findSelectedFromRoute and sets the selectedScooter
-     *
-     * @author Marco de Boer
-     */
-    '$route' () {
-      this.selectedScooter = this.findSelectedFromRouteParam(this.$route.params.id);
-    }
+    return { scooters, isPending, error, selectedScooter, newScooterIsPending, newScooterError, handleNewScooterClick, onSelect, isActiveScooter, loadFetch }
   }
 }
 </script>
@@ -194,8 +202,5 @@ export default {
   width: fit-content;
   height: fit-content;
 }
-
-
-
 
 </style>

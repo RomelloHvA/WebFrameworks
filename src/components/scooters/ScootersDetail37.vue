@@ -9,7 +9,7 @@
     <div v-else>
       <section v-if="scooterClone != null">
         <h5 class="section-title m-lg-3 mx-2 my-1">Scooter details (id= {{ scooterClone.id }})</h5>
-        <table class="table table-hover table-dark">
+        <table class="table table-hover table-dark" id="content-to-blur" :class="{ 'blur-effect': pendingBusy }">
           <thead>
           <tr>
             <th scope="col">Property</th>
@@ -83,7 +83,7 @@
             </div>
             </div>
           </button>
-          <button type="button" @click="handleCancel()" class="btn btn-warning">Cancel</button>
+          <button type="button" @click="handleCancel()" class="btn btn-warning" :disabled="false">Cancel</button>
 
       </section>
       <section v-else>
@@ -99,8 +99,8 @@ import router from "@/router";
 import NoScooterSelectedComponent from "@/components/scooters/NoScooterSelectedComponent";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import ErrorComponent from "@/components/ErrorComponent.vue";
-import {inject, ref, watchEffect} from "vue";
-import {useRoute} from "vue-router";
+import {inject, ref, watchEffect, onBeforeMount, onMounted, onBeforeUnmount, watch, computed} from "vue";
+import {useRoute, onBeforeRouteLeave, onBeforeRouteUpdate} from "vue-router";
 import {useToast} from 'vue-toast-notification';
 
 export default {
@@ -112,155 +112,125 @@ export default {
     return {
       scooterStatus: Scooter.Status,
       scooterToDelete: null,
-      scooterClone: null,
       cloneGpsLocation: null
     }
   },
 
-  async setup(props,{ emit }){
-    const loaded = ref(false)
+  setup(props,{ emit }){
     const scooterService = inject('scootersService')
     const route = useRoute()
-    const routeScooterId = ref(route.params.id)
     const deleteIsPending = ref(false)
     const deleteError = ref(null)
     const saveScooterIsPending = ref(false)
     const saveScooterError = ref(null)
     const $toast = useToast()
-    const preventRouterLeaveWarning = ref(false)
-
-    const {scooter, isPending, error, load, scooterId } = await scooterService.asyncFindById(routeScooterId.value)
-
-    /**
-     * Loads the selected scooter and sets the loaded value to true when done loading. So the 
-     */
-    
-    load().then( () => {
-      loaded.value = true
-    })
-    
+    let preventRouterLeaveWarning = false
+    const scooter = ref(null)
+    const scooterId = ref(null)
+    const isPending = ref(false)
+    const error = ref(null)
+    const load = ref(null)
+    const scooterClone = ref(null)
+    const abortDelete = ref(null)
+    const abortSave = ref(null)   
 
     /**
-     * Deletes the selected scooter and navigates back to the overview page.
+     * This method is called before the component is mounted and is a lifecycle hook
+     * It will get all the data attributes from scooterService.asyncFindById and save them in results
+     * results will contain the following attributes: scooters, isPending, error, load, scooterId
+     * The results will be watched and the values will be saved in the data attributes of this component
+     * The load function will be called and the selectedScooter will be set to the scooter with the id from the route param
+     * The scooterId will be watched and if it changes the scooterId from results will be set to the new value and scooterservice will make a new fetch
      * @author Marco de Boer
      */
-    const deleteScooter = async () => {
-      if(!window.confirm('Are you sure you want to delete this scooter?')) {
-        return
+    onBeforeMount(async () => {
+      const result = await scooterService.asyncFindById(route.params.id)
+
+      load.value = result.load
+
+      watchEffect(async () => {
+        scooter.value = result.scooter.value
+        isPending.value = result.isPending.value
+        error.value = result.error.value
+        await cloneScooter()
+      })
+
+      watch(scooterId, (newVal) => {
+        if(newVal !== undefined && newVal !== null){
+          result.scooterId.value = newVal
+        }
+      })
+
+      load.value().then(() => {
+        if(error.value === 'Could not fetch the data for that resource'){
+          error.value = 'Could not find scooter with id: ' + route.params.id
+        }
+      })
+    })
+
+    /**
+     * This watcher looks for changes to route and if there is a changes searches the id using the function
+     * @author Marco de Boer
+     */
+    watch(() => route.params.id, (newVal) => {
+      if(newVal !== undefined && newVal !== null){
+        scooterId.value = newVal
       }
-      const {isPending, error, load} = await scooterService.asyncDeleteById(scooter.value.id)
+    })
 
-      watchEffect(() => {
-        deleteIsPending.value = isPending.value;
-        deleteError.value = error.value;
-      })
+    onMounted(() =>{
+        window.addEventListener('beforeunload', confirmDiscardingChanges)
+    })
 
-      load().then( () => {
-        if(error.value === null){
-          router.push('/scooters/overview37')
-          emit('reloadScooters')
+    onBeforeUnmount( () => {
+      window.removeEventListener('beforeunload', confirmDiscardingChanges)
+    })
+
+    onBeforeRouteLeave( async (to, from, next) => {
+      if (preventRouterLeaveWarning) {
+        next()
+      } else {
+
+        if(await !confirmDiscardingChanges()){
+          next(false)
+          return
         }
-      })
-    }
+        next()
+      } 
+    })
 
-    const saveScooter = async (scooterToSave) => {
-      const {isPending, error, load } = await scooterService.asyncSave(scooterToSave)
-
-      watchEffect(() => {
-        saveScooterIsPending.value = isPending.value;
-        saveScooterError.value = error.value;
-      })
-
-      load().then( async () => {
-        if(error.value === null){
-          preventRouterLeaveWarning.value = true
-          await emit('reloadScooters')
-          await router.push('/scooters/overview37')
-          preventRouterLeaveWarning.value = false
-          $toast.success('Scooter: ' + scooterToSave.id + ' has been saved');
-        } else {
-          $toast.error('Error while saving scooter:' + scooterToSave.id);
+    onBeforeRouteUpdate( async (to, from, next) => {
+      if (preventRouterLeaveWarning) {
+        next()
+      } else {
+        if(await !confirmDiscardingChanges()){
+          next(false)
+          return
         }
-      })
+        next()
+      }
+    })
 
-    }
-
-    return { scooter, isPending, error,load , loaded, scooterId, deleteScooter, deleteIsPending, deleteError, saveScooter, saveScooterIsPending, saveScooterError, preventRouterLeaveWarning}
-  },
-
-  methods: {
     /**
      * Clones the scooter, so it won't make direct changes to the selected scooter.
      * @author Romello ten Broeke
      */
-    async cloneScooter() {
-      if (this.scooter !== null) {
-        this.scooterClone = await Scooter.cloneScooter(this.scooter)
+     async function cloneScooter() {
+      if (scooter.value !== null) {
+        scooterClone.value = await Scooter.cloneScooter(scooter.value)
       }
-    },
-    /**
-     * Clears all the available scooter attributes by looping through all the keys in the object and setting
-     * the key values to '' whilst still keeping the same id
-     * Also initializes the scootergps location if there is none.
-     * @author Romello ten Broeke
-     */
-     clearAllFields() {
-      if (!this.confirmDiscardingChanges()) {
-        return;
-      }
+    }
 
-      Object.keys(this.scooterClone).forEach(key => {
-        if (key !== 'status' && key !== 'gpslocation' && key !== 'id') {
-          this.scooterClone[key] = ''; // Set each property to an empty value
-        }
-      })
-
-      if (!this.scooterClone.gpsLocation) {
-        this.scooterClone.gpsLocation = {latitude: null, longitude: null};
-      }
-      this.scooterClone.gpsLocation.latitude = 0
-      this.scooterClone.gpsLocation.longitude = 0
-      this.scooterClone.status = 'UNAVAILABLE'
-    },
-    /**
-     * Handles the cancel button. If the user has unsaved changes, it will ask the user if they want to discard the changes.
-     * @author Marco de Boer
-     */
-    handleCancel () {
-      if(!this.confirmDiscardingChanges()){
-        return
-      }
-      this.pushRoute()
-    },
-
-    /**
-     * Pushes this route. Helps to unselect scooters
-     * @author Romello ten Broeke
-     */
-    pushRoute(){
-      this.preventRouterLeaveWarning = true
-      router.push('/scooters/overview37').then(() => {
-        this.preventRouterLeaveWarning = false
-      })
-    },
-
-    resetScooter(){
-      if(!this.confirmDiscardingChanges()){
-          return
-        }
-
-      this.cloneScooter()
-    },
     /**
      * Confirms if the user wants to discard the changes made to the scooter.
      * @author Marco de Boer
      * @returns {boolean} true if the user wants to discard the changes, false if not.
      */
-    confirmDiscardingChanges () {
-      if (this.scooter === null || this.scooterClone === null) {
+    async function confirmDiscardingChanges () {
+      if (scooter.value === null || scooterClone.value === null) {
         return true
       }
-      if (this.scooterClone.equals(this.scooter)) {
+      if (await scooterClone.value.equals(scooter.value)) {
         return true;
       }
 
@@ -270,72 +240,163 @@ export default {
 
       return false;
     }
-  },
-  
-  beforeRouteLeave (to, from, next) {
-    if (this.preventRouterLeaveWarning) {
-      next()
-    } else {
 
-      if(!this.confirmDiscardingChanges()){
-        next(false)
-        return
-      }
-      next()
-    } 
-  },
-
-  beforeRouteUpdate (to, from, next) {
-    if (this.preventRouterLeaveWarning) {
-      next()
-    } else {
-      if(!this.confirmDiscardingChanges()){
-        next(false)
-        return
-      }
-      next()
-    }
-  },
-
- mounted() {
-    window.addEventListener('beforeunload', this.confirmDiscardingChanges)
-
-    watchEffect(async () => {
-      if (this.loaded) {
-        await this.cloneScooter()
-      }
-    })
-
-
-  },
-
-  beforeUnmount() {
-    window.removeEventListener('beforeunload', this.confirmDiscardingChanges)
-  },
-
-  watch: {
-        /**
-     * This watcher looks for changes to route and if there is a changes searches the id using the function
-     * findSelectedFromRoute and sets the selectedScooter
-     *
+    /**
+     * This method will abort the save or delete request if there is one pending.
+     * @returns {boolean} true if there was a pending request, false if not. This is used to prevent the router from navigating away if there is a pending request.
      * @author Marco de Boer
      */
-    '$route' () {
-      if(this.$route.params.id !== undefined){
-        this.scooterId = this.$route.params.id
-      }
-    }
-  },
+    function handleAbort() {
+      let aborted = false
+
+      if(abortSave.value !== null && saveScooterIsPending.value){
+        abortSave.value()
+        aborted = true
+      } 
       
-  computed: {
-    hasChanged() {
-      return this.scooter.equals(this.scooterClone)
-    },
-    pendingBusy(){
-      return this.deleteIsPending || this.saveScooterIsPending
+      if (abortDelete.value !== null && deleteIsPending.value){
+        abortDelete.value()
+        aborted = true
+      }
+
+      return aborted
     }
-  },
-  
+
+    /**
+     * Pushes this route. Helps to unselect scooters
+     * @author Romello ten Broeke
+     */
+     function pushRoute () {
+      preventRouterLeaveWarning = true
+      router.push('/scooters/overview37').then(() => {
+        preventRouterLeaveWarning = false
+      })
+    }
+
+    /**
+     * Handles the cancel button. If the user has unsaved changes, it will ask the user if they want to discard the changes.
+     * @author Marco de Boer
+     */
+    const handleCancel = () => {
+      if(handleAbort()){
+        return
+      }
+
+      if(!confirmDiscardingChanges()){
+        return
+      }
+      pushRoute()
+    }
+
+    const resetScooter = () => {
+      if(!confirmDiscardingChanges()){
+          return
+        }
+
+      cloneScooter()
+    }
+    
+    /**
+     * Deletes the selected scooter and navigates back to the overview page.
+     * It also emits an event to reload the scooters in the overview page.
+     * @author Marco de Boer
+     */
+
+    const deleteScooter = async () => {
+      if(!window.confirm('Are you sure you want to delete this scooter?')) {
+        return
+      }
+      const {isPending, error, load, abort, isAborted} = await scooterService.asyncDeleteById(scooter.value.id)
+
+      abortDelete.value = abort
+
+      watchEffect(() => {
+        deleteIsPending.value = isPending.value;
+        deleteError.value = error.value;
+      })
+      
+
+      load().then( () => {
+        if(error.value === null && !isAborted.value){
+          router.push('/scooters/overview37')
+          emit('reloadScooters')
+        } else if (!isAborted.value) {
+          $toast.error('Error while deleting scooter:' + scooter.value.id);
+        }
+      })
+    }
+
+    /**
+     * This method saves the scooterClone to the database and navigates back to the overview page.
+     * It also emits an event to reload the scooters in the overview page.
+     * @param {Scooter} scooterToSave 
+     * @author Marco de Boer
+     */
+    const saveScooter = async (scooterToSave) => {
+      const {isPending, error, load, abort, isAborted } = await scooterService.asyncSave(scooterToSave)
+
+      abortSave.value = abort
+
+      watchEffect(() => {
+        saveScooterIsPending.value = isPending.value;
+        saveScooterError.value = error.value;
+      })
+
+      load().then( async () => {
+        if(error.value === null && !isAborted.value){
+          preventRouterLeaveWarning = true
+          await emit('reloadScooters')
+          await router.push('/scooters/overview37')
+          preventRouterLeaveWarning = false
+          $toast.success('Scooter: ' + scooterToSave.id + ' has been saved');
+        } else if (!isAborted.value) {
+          $toast.error('Error while saving scooter:' + scooterToSave.id);
+        }
+      })
+
+    }
+
+    /**
+     * Clears all the available scooter attributes by looping through all the keys in the object and setting
+     * the key values to '' whilst still keeping the same id
+     * Also initializes the scootergps location if there is none.
+     * @author Romello ten Broeke
+     */
+    const clearAllFields = () => {
+      if (!confirmDiscardingChanges()) {
+        return;
+      }
+
+      Object.keys(scooterClone.value).forEach(key => {
+        if (key !== 'status' && key !== 'gpslocation' && key !== 'id') {
+          scooterClone.value[key] = ''; // Set each property to an empty value
+        }
+      })
+
+      if (!scooterClone.value.gpsLocation) {
+        scooterClone.value.gpsLocation = {latitude: null, longitude: null};
+      }
+      scooterClone.value.gpsLocation.latitude = 0
+      scooterClone.value.gpsLocation.longitude = 0
+      scooterClone.value.status = 'UNAVAILABLE'
+    }
+
+    const hasChanged = computed(() => { return scooter.value.equals(scooterClone.value)})
+
+    const pendingBusy = computed(() => { return deleteIsPending.value || saveScooterIsPending.value })
+
+    return { scooter, isPending, error,load, scooterClone, deleteScooter, deleteIsPending, deleteError, saveScooter, saveScooterIsPending,
+       saveScooterError, handleCancel, resetScooter, clearAllFields, hasChanged, pendingBusy
+      }
+  } 
 }
 </script>
+
+<style>
+.blur-effect {
+    filter: blur(1px);
+    pointer-events: none;
+    user-select: none;
+}
+</style>
 
