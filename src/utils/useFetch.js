@@ -12,15 +12,15 @@ import { ref } from "vue"
  * @author Marco de Boer
  */
 export function useFetch(url, object, method = 'GET') {
-    const data = ref([]);
-    const isPending = ref(true);
-    const error = ref(null);
+    const data = ref([])
+    const isPending = ref(true)
+    const error = ref(null)
     const abortController = new AbortController();
-    const isAborted = ref(false);
+    const isAborted = ref(false)
 
     const abort = () => {
         abortController.abort()
-        isAborted.value = true;
+        isAborted.value = true
     }
 
     const fetchOptions = {
@@ -32,7 +32,7 @@ export function useFetch(url, object, method = 'GET') {
     }
 
     if (method !== 'GET' && object) {
-        fetchOptions.body = JSON.stringify(object);
+        fetchOptions.body = JSON.stringify(object)
     }
 
     /**
@@ -40,23 +40,24 @@ export function useFetch(url, object, method = 'GET') {
      * @param {String} newUrl if you want to make a new call to a different endpoint that returns the same type of data, should then only be used if you want to get different id for example
      */
     const load =  async (newUrl = url) => {
-        isAborted.value = false;
-        isPending.value = true;
+        isAborted.value = false
+        isPending.value = true
         try{
-            const response = await fetch(newUrl, fetchOptions);
+            const response = await fetch(newUrl, fetchOptions)
+
             if(!response.ok){
-                throw Error('Could not fetch the data for that resource');
+                throw Error('Could not fetch the data for that resource')
             }
-            data.value = await response.json();
-            error.value = null;
+            data.value = await response.json()
+            error.value = null
         } catch (err) {
-            if(err.name !== 'AbortError'){
-                error.value = err.message;
-            } else {
-                console.log('Fetch aborted');
+            if (err.message === 'Failed to fetch'){
+                error.value = 'Oops! Our servers are taking a break. We are working on getting them back up. Please try again later'
+            } else if(err.name !== 'AbortError'){
+                error.value = err.message
             }
         } finally {
-            isPending.value = false;
+            isPending.value = false
         }
     }
 
