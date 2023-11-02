@@ -117,7 +117,7 @@ export default {
   },
 
   setup(props,{ emit }){
-    const scooterService = inject('scooterService')
+    const scooterService = inject('scooterService2')
     const route = useRoute()
     const deleteIsPending = ref(false)
     const deleteError = ref(null)

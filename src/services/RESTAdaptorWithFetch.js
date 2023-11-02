@@ -1,5 +1,6 @@
 import {ref, watch, watchEffect} from "vue";
 import useFetch from "@/utils/useFetch";
+import {Scooter} from "@/models/Scooter";
 
 export class RESTAdaptorWithFetch /* <E> */ {
     resourcesUrl;
@@ -39,6 +40,25 @@ export class RESTAdaptorWithFetch /* <E> */ {
         })
 
         return {entity, isPending, error, load, entityId}
+    }
+
+    async asyncSave(entityToSave){
+        const entity = ref(entityToSave)
+
+        const { data, isPending, error, load, abort, isAborted } = await useFetch(this.resourcesUrl + '/' + entity.value.id, entity.value, 'POST')
+        watchEffect(() => {
+            entity.value = Scooter.copyConstructor(data.value)
+        })
+
+        return { entity, isPending, error, load, abort, isAborted }
+    }
+
+    async asyncDeleteById(id){
+        const entityId = ref(id)
+
+        const { isPending, error, load, abort, isAborted } = await useFetch(this.resourcesUrl + '/' + entityId.value, {}, 'DELETE')
+
+        return { isPending, error, load, abort, isAborted }
     }
 
 }

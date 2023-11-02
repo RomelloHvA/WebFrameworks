@@ -71,7 +71,7 @@ export default {
   },
 
   setup(){
-    const scooterService = inject('scooterService')
+    const scooterService = inject('scooterService2')
     const newScooterIsPending = ref(false)
     const newScooterError = ref(null)
     const selectedScooter = ref(null)
