@@ -47,7 +47,7 @@ export class RESTAdaptorWithFetch /* <E> */ {
 
         const { data, isPending, error, load, abort, isAborted } = await useFetch(this.resourcesUrl + '/' + entity.value.id, entity.value, 'POST')
         watchEffect(() => {
-            entity.value = Scooter.copyConstructor(data.value)
+            entity.value = this.copyConstructor(data.value)
         })
 
         return { entity, isPending, error, load, abort, isAborted }
