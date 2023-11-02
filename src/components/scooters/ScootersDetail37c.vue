@@ -318,12 +318,22 @@ export default {
 
       load().then( () => {
         if(error.value === null && !isAborted.value){
-          router.push('/scooters/overview37')
+          router.push('/scooters/overview37c')
+          $toast.success('Scooter: ' + scooter.value.id + ' Deleted')
           emit('reloadScooters')
         } else if (!isAborted.value) {
           $toast.error('Error while deleting scooter:' + scooter.value.id);
         }
       })
+    }
+    function isValidTag(tag){
+      return tag.length > 0;
+    }
+    function isValidBattery(batteryCharge){
+      return batteryCharge >= 0 && batteryCharge <= 100;
+    }
+    function isValidInput(scooter){
+      return isValidTag(scooter.tag) && isValidBattery(scooter.batteryCharge)
     }
 
     /**
@@ -333,26 +343,31 @@ export default {
      * @author Marco de Boer
      */
     const saveScooter = async (scooterToSave) => {
-      const {isPending, error, load, abort, isAborted } = await scooterService.asyncSave(scooterToSave)
+      if (isValidInput(scooterToSave)){
+        const {isPending, error, load, abort, isAborted } = await scooterService.asyncSave(scooterToSave)
 
-      abortSave.value = abort
+        abortSave.value = abort
 
-      watchEffect(() => {
-        saveScooterIsPending.value = isPending.value;
-        saveScooterError.value = error.value;
-      })
+        watchEffect(() => {
+          saveScooterIsPending.value = isPending.value;
+          saveScooterError.value = error.value;
+        })
 
-      load().then( async () => {
-        if(error.value === null && !isAborted.value){
-          preventRouterLeaveWarning = true
-          await emit('reloadScooters')
-          await router.push('/scooters/overview37')
-          preventRouterLeaveWarning = false
-          $toast.success('Scooter: ' + scooterToSave.id + ' has been saved');
-        } else if (!isAborted.value) {
-          $toast.error('Error while saving scooter:' + scooterToSave.id);
-        }
-      })
+        load().then( async () => {
+          if(error.value === null && !isAborted.value){
+            preventRouterLeaveWarning = true
+            await emit('reloadScooters')
+            await router.push('/scooters/overview37c')
+            preventRouterLeaveWarning = false
+            $toast.success('Scooter: ' + scooterToSave.id + ' has been saved');
+          } else if (!isAborted.value) {
+            $toast.error('Error while saving scooter:' + scooterToSave.id);
+          }
+        })
+      } else {
+        $toast.error('Please check the input fields.')
+      }
+
 
     }
 
@@ -372,7 +387,6 @@ export default {
           scooterClone.value[key] = ''; // Set each property to an empty value
         }
       })
-
       if (!scooterClone.value.gpsLocation) {
         scooterClone.value.gpsLocation = {latitude: null, longitude: null};
       }
@@ -388,6 +402,7 @@ export default {
     return { scooter, isPending, error,load, scooterClone, deleteScooter, deleteIsPending, deleteError, saveScooter, saveScooterIsPending,
        saveScooterError, handleCancel, resetScooter, clearAllFields, hasChanged, pendingBusy
       }
+
   }
 }
 </script>
