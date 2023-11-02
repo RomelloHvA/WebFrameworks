@@ -71,7 +71,7 @@ export default {
   },
 
   setup(){
-    const scooterService = inject('scootersService')
+    const scooterService = inject('scooterService')
     const newScooterIsPending = ref(false)
     const newScooterError = ref(null)
     const selectedScooter = ref(null)
@@ -96,7 +96,7 @@ export default {
       load.value = results.load
 
       watchEffect(() => {
-        scooters.value = results.scooters.value
+        scooters.value = results.entities.value
         isPending.value = results.isPending.value
         error.value = results.error.value
       })
@@ -118,7 +118,7 @@ export default {
         return null
       }
 
-      return scooters.value.find(scooter => scooter.id == scooterId)
+      return scooters.value.find(scooter => scooter.id === scooterId)
     }
 
 

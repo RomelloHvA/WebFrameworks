@@ -117,7 +117,7 @@ export default {
   },
 
   setup(props,{ emit }){
-    const scooterService = inject('scootersService')
+    const scooterService = inject('scooterService')
     const route = useRoute()
     const deleteIsPending = ref(false)
     const deleteError = ref(null)
@@ -149,7 +149,7 @@ export default {
       load.value = result.load
 
       watchEffect(async () => {
-        scooter.value = result.scooter.value
+        scooter.value = result.entity.value
         isPending.value = result.isPending.value
         error.value = result.error.value
         await cloneScooter()
@@ -157,7 +157,7 @@ export default {
 
       watch(scooterId, (newVal) => {
         if(newVal !== undefined && newVal !== null){
-          result.scooterId.value = newVal
+          result.entityId.value = newVal
         }
       })
 

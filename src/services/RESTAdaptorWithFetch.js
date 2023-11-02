@@ -1,47 +1,44 @@
-import {ref, watchEffect} from "vue";
+import {ref, watch, watchEffect} from "vue";
 import useFetch from "@/utils/useFetch";
 
 export class RESTAdaptorWithFetch /* <E> */ {
     resourcesUrl;
-    copyConstructor; // Constructor to copy from a json into the backend.
+    copyConstructor;
 
     constructor(resourcesUrl, copyConstructor) {
         this.resourcesUrl = resourcesUrl;
         this.copyConstructor = copyConstructor;
     }
-    async findAll(){
-        const entity = ref([])
-
-        const { data, isPending, error, load } = await useFetch(this.resourcesUrl + '/all')
-
-        watchEffect(() => {
-            entity.value = data.value.map(entity => this.copyConstructor(entity))
-        })
-
-        return { entities: entity, isPending, error, load }
-    }
-    async findById(id){
-        return await this.copyConstructor(fetch(`${this.resourcesUrl}/${id}`));}
-
-    async save(entity){
-        const newEntity = ref(entity);
-
-        const { data, isPending, error, load, abort, isAborted } = await useFetch(this.resourcesUrl + '/' + newEntity.value.id, newEntity.value, 'POST')
+    async asyncFindAll() {
+        const entities = ref([])
+        const {data, isPending, error, load } = await useFetch(this.resourcesUrl+ '/all')
 
         watchEffect(() => {
-            newEntity.value = this.copyConstructor(data.value)
+            entities.value = data.value.map(entity => this.copyConstructor(entity))
         })
 
-        return { newEntity, isPending, error, load, abort, isAborted }
-
+        return {entities, isPending, error, load}
     }
-    async delete(id){
+
+    async asyncFindById(id) {
+        const entity = ref(null)
         const entityId = ref(id)
 
-        const { isPending, error, load, abort, isAborted } = await useFetch(this.resourcesUrl + '/' + entityId.value, {}, 'DELETE')
+        const {data, isPending, error, load} = await useFetch(this.resourcesUrl + '/' + id)
 
-        return { isPending, error, load, abort, isAborted }
+        const updateAndLoad = (newId) => {
+            entityId.value = newId
+            load(this.resourcesUrl + '/' + newId)
+        }
+        watchEffect(() => {
+            entity.value = this.copyConstructor(data.value)
+        })
 
+        watch(entityId, (newId) => {
+            updateAndLoad(newId);
+        })
+
+        return {entity, isPending, error, load, entityId}
     }
 
 }
