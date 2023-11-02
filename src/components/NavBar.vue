@@ -1,4 +1,4 @@
-/** This is the NavBar component it creates the navigation bar on the top of the page.  
+/** This is the NavBar component it creates the navigation bar on the top of the page.
  *  @name NavBar
  *  @author Marco de Boer
 
@@ -25,6 +25,7 @@
                           <li><router-link exact-active-class="dropdown-item-active" :to=" { name: 'scooterOverview33' }" class="dropdown-item">Scooters details (router)</router-link></li>
                           <li><router-link exact-active-class="dropdown-item-active" :to=" { name: 'scooterOverview34' }" class="dropdown-item">Scooters details (3.4)</router-link></li>
                           <li><router-link exact-active-class="dropdown-item-active" :to=" { name: 'scooterOverview37' }" class="dropdown-item">Scooters details (Rest-backend)</router-link></li>
+                          <li><router-link exact-active-class="dropdown-item-active" :to=" { name: 'scooterOverview37c' }" class="dropdown-item">Scooters details (Rest-backend-bonus)</router-link></li>
                           <li><a class="dropdown-item" href="#">Available Scooters</a></li>
                             <li><a class="dropdown-item" href="#">Abandoned Scooters</a></li>
                         </ul>

@@ -10,6 +10,8 @@ import ScootersOverView34 from "@/components/scooters/ScootersOverView34";
 import ScootersDetail34 from "@/components/scooters/ScootersDetail34";
 import ScootersDetail37 from "@/components/scooters/ScootersDetail37";
 import NoScooterSelectedComponent from "@/components/scooters/NoScooterSelectedComponent";
+import ScootersOverView37c from "@/components/scooters/ScootersOverView37c";
+import ScootersDetail37c from "@/components/scooters/ScootersDetail37c";
 
 export const routes = [
   {
@@ -54,6 +56,23 @@ export const routes = [
         path: ':id',
         name: 'scootersDetail37',
         component: ScootersDetail37,
+        props: true
+      },
+      {
+        path: '',
+        name: 'scootersNoDetail',
+        component: NoScooterSelectedComponent
+      }
+    ]
+  },{
+    path: '/scooters/overview37c',
+    name: 'scooterOverview37c',
+    component: ScootersOverView37c,
+    children: [
+      {
+        path: ':id',
+        name: 'scootersDetail37c',
+        component: ScootersDetail37c,
         props: true
       },
       {
