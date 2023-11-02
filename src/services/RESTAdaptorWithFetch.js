@@ -1,7 +1,5 @@
 import {ref, watch, watchEffect} from "vue";
 import useFetch from "@/utils/useFetch";
-import {Scooter} from "@/models/Scooter";
-
 export class RESTAdaptorWithFetch /* <E> */ {
     resourcesUrl;
     copyConstructor;
