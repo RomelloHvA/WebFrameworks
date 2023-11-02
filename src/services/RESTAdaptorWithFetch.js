@@ -1,5 +1,11 @@
 import {ref, watch, watchEffect} from "vue";
 import useFetch from "@/utils/useFetch";
+
+/**
+ * Provides utility methods for performing asynchronous CRUD operations via RESTful API using Vue.js Composition API
+ * and Fetch.
+ * @author Romello ten Broeke
+ */
 export class RESTAdaptorWithFetch /* <E> */ {
     resourcesUrl;
     copyConstructor;
@@ -8,6 +14,12 @@ export class RESTAdaptorWithFetch /* <E> */ {
         this.resourcesUrl = resourcesUrl;
         this.copyConstructor = copyConstructor;
     }
+
+    /**
+     * function to get all the scooters from the backend
+     * @returns {entities, isPending, error, load} you need to make a const and destructure the return value
+     * @author Romello ten Broeke
+     */
     async asyncFindAll() {
         const entities = ref([])
         const {data, isPending, error, load } = await useFetch(this.resourcesUrl+ '/all')
@@ -19,6 +31,12 @@ export class RESTAdaptorWithFetch /* <E> */ {
         return {entities, isPending, error, load}
     }
 
+    /**
+     * finds Scooter per id
+     * @param {Number} id  the id of the scooter you want to get
+     * @returns {entity, isPending, error, load, scooterId} you need to make a const and destructure the return value
+     * @author Romello ten Broeke
+     */
     async asyncFindById(id) {
         const entity = ref(null)
         const entityId = ref(id)
@@ -40,6 +58,13 @@ export class RESTAdaptorWithFetch /* <E> */ {
         return {entity, isPending, error, load, entityId}
     }
 
+    /**
+     * Saves a scooter or updates it if it already exists.
+     * @param {Scooter} scooterToSave  the scooter you want to save
+     * @returns  {entity, isPending, error, load, abort, isAborted} you need to make a const and destructure the return value
+     * @author Romello ten Broeke
+     */
+
     async asyncSave(entityToSave){
         const entity = ref(entityToSave)
 
@@ -50,6 +75,13 @@ export class RESTAdaptorWithFetch /* <E> */ {
 
         return { entity, isPending, error, load, abort, isAborted }
     }
+
+    /**
+     * Deletes a scooter from the backend.
+     * @param {Number} id the id of the scooter you want to delete
+     * @returns {isPending, error, load} you need to make a const and destructure the return value
+     * @author Romello ten Broeke
+     */
 
     async asyncDeleteById(id){
         const entityId = ref(id)

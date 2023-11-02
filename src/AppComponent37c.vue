@@ -11,9 +11,9 @@
 import HeaderComponent from "@/components/HeaderComponent";
 import NavBar from "@/components/NavBar";
 import CONFIG from "@/app-config"
-import {RESTAdaptorWithFetch} from "@/services/RESTAdaptorWithFetch";
 import {Scooter} from "@/models/Scooter";
 import {ScootersAdaptor} from "@/services/ScootersAdaptor";
+import {CachedRESTAdaptorWithFetch} from "@/services/CachedRESTAdaptorWithFetch";
 
 export default {
   name: "AppComponent31",
@@ -21,7 +21,7 @@ export default {
   provide() {
     return {
       scootersService: new ScootersAdaptor(CONFIG.BACKEND_URL + '/scooters'),
-      scooterService2: new RESTAdaptorWithFetch(CONFIG.BACKEND_URL + '/scooters', Scooter.copyConstructor)
+      scooterService2: new CachedRESTAdaptorWithFetch(CONFIG.BACKEND_URL + '/scooters', Scooter.copyConstructor)
     }
   }
 
