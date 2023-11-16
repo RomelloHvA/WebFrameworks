@@ -1,17 +1,42 @@
 package app.models;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
 
 import java.util.Random;
 
+@Entity
+@Table(name= "Scooter")
 public class Scooter {
     @JsonView(Views.Summary.class)
-    private long id;
-    @JsonView(Views.Summary.class) private String tag;
-    @JsonView(Views.Summary.class) private Status status;
+    @Column(name = "tag")
+    private String tag;
+    @JsonView(Views.Summary.class)
+    @Column(name = "status")
+    private Status status;
+
+    public void setGpsLocation(GPSLocation gpsLocation) {
+        this.gpsLocation = gpsLocation;
+    }
+
+    @JsonView(Views.Summary.class)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
+
+    @OneToOne(mappedBy = "scooter", cascade = CascadeType.ALL)
     private GPSLocation gpsLocation;
+
+
+    @Column(name = "mileage")
     private int mileage;
     @JsonView(Views.Summary.class) private int batteryCharge;
+
+    public Scooter() {
+
+    }
 
     public class Views {
         public static class Summary {
@@ -120,8 +145,8 @@ public class Scooter {
         return batteryCharge;
     }
 
-    public int getId() {
-        return (int) id;
+    public Long getId() {
+        return id;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package app.repositories;
 
+import app.exceptions.ResourceNotFound;
 import app.models.Scooter;
 import org.springframework.stereotype.Repository;
 
@@ -7,18 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@Repository("SCOOTERS.INMEMORY")
+@Repository
 public class ScootersRepositoryMock implements ScootersRepository{
 
     private List<Scooter> scooters;
 
-    public ScootersRepositoryMock() {
+    public ScootersRepositoryMock() throws ResourceNotFound {
         int numberOfScooters = 7;
         int startId = 4000;
         scooters = new ArrayList<>();
 
         for (int i = 0; i < numberOfScooters; i++) {
-            if (findById(startId+i) == null) {
+            try {
+                findById(startId+i);
+            } catch (ResourceNotFound e){
+                System.out.println(e.getMessage());
+                System.out.println("Creating Scooter with id:" + startId + i);
                 scooters.add(Scooter.createSampleScooter(startId+i));
             }
         }
@@ -37,14 +42,14 @@ public class ScootersRepositoryMock implements ScootersRepository{
      * @author Romello ten Broeke
      */
     @Override
-    public Scooter findById(long id) {
+    public Scooter findById(long id) throws ResourceNotFound {
         for (Scooter scooter : scooters){
             if (scooter.getId() == id){
                 return scooter;
             }
         }
         //No scooter exists by this id
-        return null;
+        throw new ResourceNotFound("cant find Scooter with Id:" + id);
     }
 
     /**
@@ -57,29 +62,37 @@ public class ScootersRepositoryMock implements ScootersRepository{
      */
 
     @Override
-    public Scooter save(Scooter scooter) {
-        Scooter scooterToEdit = findById(scooter.getId());
-        // Update the scooter if it is found in the list
-        if (scooterToEdit != null){
-            scooterToEdit.setId(scooter.getId());
-            scooterToEdit.setTag(scooter.getTag());
-            scooterToEdit.setStatus(scooter.getStatus());
-            scooterToEdit.setMileage(scooter.getMileage());
-            scooterToEdit.setGPSLocation(scooter.getGpsLocation());
-            scooterToEdit.setBatteryCharge(scooter.getBatteryCharge());
-            //Returns the changed scooter.
-            return scooterToEdit;
+    public Scooter save(Scooter scooter) throws ResourceNotFound {
+        try {
+            Scooter scooterToEdit = findById(scooter.getId());
 
-        } else if (scooter.getId() == 0) {
-            long newId = generateUniqueId();
-            while (findById(newId) != null){
-                newId = generateUniqueId();
+            // Update the scooter if it is found in the list
+            if (scooterToEdit != null) {
+                scooterToEdit.setId(scooter.getId());
+                scooterToEdit.setTag(scooter.getTag());
+                scooterToEdit.setStatus(scooter.getStatus());
+                scooterToEdit.setMileage(scooter.getMileage());
+                scooterToEdit.setGPSLocation(scooter.getGpsLocation());
+                scooterToEdit.setBatteryCharge(scooter.getBatteryCharge());
+
+                // Returns the changed scooter.
+                return scooterToEdit;
+            } else if (scooter.getId() == 0) {
+                long newId = generateUniqueId();
+                while (findById(newId) != null) {
+                    newId = generateUniqueId();
+                }
+                scooter.setId(newId);
             }
-            scooter.setId(newId);
+            scooters.add(scooter);
+            return scooter;
+        } catch (ResourceNotFound e) {
+            // Handle the exception (e.g., log it, print a message, etc.)
+            System.out.println("Error in save method: " + e.getMessage());
+            throw e; // Re-throw the exception if needed
         }
-        scooters.add(scooter);
-        return scooter;
     }
+
 
     /**
      * Random number generotor for the ID
@@ -97,7 +110,7 @@ public class ScootersRepositoryMock implements ScootersRepository{
      * @author Romello ten Broeke
      */
     @Override
-    public Scooter deleteById(long id) {
+    public Scooter deleteById(long id) throws ResourceNotFound {
         // Save the scooter to a local variable so there are no unnecessary calls to findyById.
         Scooter scooterToDelete = findById(id);
         if (scooterToDelete != null){

@@ -1,12 +1,47 @@
 package app.models;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "GPSLocation")
 public class GPSLocation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
+    @OneToOne
+    @JoinColumn(name = "scooter_id", referencedColumnName = "id")
+    private Scooter scooter;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Scooter getScooter() {
+        return scooter;
+    }
+
+    public void setScooter(Scooter scooter) {
+        this.scooter = scooter;
+    }
+
+    @Column(name = "latitude")
     private double latitude;
+    @Column(name = "longitude")
     private double longitude;
 
     public GPSLocation(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public GPSLocation() {
+
     }
 
     public double getLatitude() {

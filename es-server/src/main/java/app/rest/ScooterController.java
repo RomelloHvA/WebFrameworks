@@ -1,7 +1,6 @@
 package app.rest;
 
 import app.exceptions.PreConditionFailed;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import app.exceptions.ResourceNotFound;
 import app.models.Scooter;
 import app.repositories.ScootersRepository;
@@ -24,6 +23,7 @@ public class ScooterController {
 
     @Autowired
     ScootersRepository<Scooter> scootersRepo;
+
 
     /**
      * Get a list of test scooters.
@@ -63,8 +63,8 @@ public class ScooterController {
         Scooter scooter = scootersRepo.findById(id);
         if (scooter != null) {
             return ResponseEntity.ok(scooter);
-        } else{
-            throw new ResourceNotFound("Can't find scooter with Id:" + id);
+        } else {
+            return ResponseEntity.noContent().build();
         }
     }
 
@@ -82,7 +82,7 @@ public class ScooterController {
      * @author Romello ten Broeke
      */
     @PostMapping("{id}")
-    public ResponseEntity<Object> addNewScooter(@PathVariable long id, @RequestBody Scooter scooter) throws PreConditionFailed {
+    public ResponseEntity<Object> addNewScooter(@PathVariable long id, @RequestBody Scooter scooter) throws PreConditionFailed, ResourceNotFound {
         if (id != scooter.getId()){
             throw new PreConditionFailed("ID in URL doesn't match the given scooter ID");
         } else {
@@ -100,7 +100,7 @@ public class ScooterController {
      * @author Romello ten Broeke
      */
     @PutMapping("{id}")
-    public ResponseEntity<Object> updateScooter(@PathVariable long id, @RequestBody Scooter scooter) throws PreConditionFailed {
+    public ResponseEntity<Object> updateScooter(@PathVariable long id, @RequestBody Scooter scooter) throws PreConditionFailed, ResourceNotFound {
 
         if (id != scooter.getId()){
             throw new PreConditionFailed("ID in URL doesn't match the given scooter ID");
@@ -124,7 +124,7 @@ public class ScooterController {
      * @author Romello ten Broeke
      */
     @DeleteMapping("{id}")
-    public ResponseEntity<Object> deleteScooter(@PathVariable long id) {
+    public ResponseEntity<Object> deleteScooter(@PathVariable long id) throws ResourceNotFound {
         if (scootersRepo.findById(id) == null) {
             Exception exception = new ResourceNotFound("Id not found:" +id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
