@@ -96,20 +96,25 @@ public class ScooterController {
         }
     }
 
-//    @PostMapping("{id}/trips")
-//    public ResponseEntity<Object> addNewTrip(@PathVariable long id, @RequestBody Trip trip) {
-//        Scooter scooter = new Scooter();
-//        try {
-//            scooter = scootersRepo.findById(id);
-//
-//            if (scooter.getStatus() != Scooter.Status.IDLE && scooter.getBatteryCharge() < 10){
-//                return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("Scooter cannot be Idle or below 10% battery");
-//            }
-//        } catch (ResourceNotFound e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-//        }
-//
-//    }
+    @PostMapping("{id}/trips")
+    public ResponseEntity<Object> addNewTrip(@PathVariable long id, @RequestBody Trip trip) {
+        Scooter scooter = new Scooter();
+        try {
+            scooter = scootersRepo.findById(id);
+
+            if (scooter.getStatus() != Scooter.Status.IDLE || scooter.getBatteryCharge() < 10){
+                return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("Scooter cannot be Idle or below 10% battery");
+            }
+
+            if (scooter.associateTrip(trip)){
+                tripsRepositoryJpa.save(trip);
+            }
+
+        } catch (ResourceNotFound e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body("Trip has been added");
+    }
 
     /**
      * Update a scooter.
