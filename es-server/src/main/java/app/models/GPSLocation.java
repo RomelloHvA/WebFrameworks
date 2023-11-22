@@ -1,5 +1,6 @@
 package app.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,8 +10,9 @@ public class GPSLocation {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-    @OneToOne
-    @JoinColumn(name = "scooter_id", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "scooter_id", referencedColumnName = "id", nullable = false)
+    @JsonBackReference
     private Scooter scooter;
 
 
