@@ -15,7 +15,7 @@ public class Trip {
 
     @Column(name = "startTime")
     private LocalDate startTime;
-    @Column(name ="endTime")
+    @Column(name = "endTime")
     private LocalDate endTime;
     @Column(name = "startPosition")
     private String startPosition;
@@ -23,7 +23,7 @@ public class Trip {
     private String endPosition;
     @Column(name = "mileage")
     private int mileage;
-    @Column(name ="cost")
+    @Column(name = "cost")
     private double cost;
 
     @ManyToOne
@@ -31,7 +31,7 @@ public class Trip {
     @JsonBackReference
     private Scooter scooter;
 
-    public static Trip createSampleTrip(){
+    public static Trip createSampleTrip() {
         final Random RANDOM = new Random();
         LocalDate startTime = LocalDate.now().plusDays(RANDOM.nextInt(30)); // Up to 30 days in the future
         LocalDate endTime = startTime.plusDays(RANDOM.nextInt(10) + 1); // 1 to 10 days duration
@@ -52,21 +52,16 @@ public class Trip {
             this.scooter.dissociateTrip(this);
             this.scooter = null;
             return false;
-        } else if (scooter.getStatus() == Scooter.Status.IDLE){
-            System.out.println("Status = idle. trying to add new trip");
-            if (scooter.equals(this.scooter)) {
-                return false;
-                //Associate the scooter with this trip.
-            } else {
-                this.scooter = scooter;
-                this.scooter.associateTrip(this);
-                System.out.println("Trip added for id: " + scooter.getId());
-                return true;
-            }
         }
-        System.out.println("No trip added for scooter: " + scooter.getId());
-return false;
-
+        if (scooter.equals(this.scooter)) {
+            return false;
+            //Associate the scooter with this trip.
+        } else {
+            this.scooter = scooter;
+            this.scooter.associateTrip(this);
+            System.out.println("Trip added for id: " + scooter.getId());
+            return true;
+        }
 
     }
 

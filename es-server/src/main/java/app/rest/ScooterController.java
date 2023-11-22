@@ -3,10 +3,12 @@ package app.rest;
 import app.exceptions.PreConditionFailed;
 import app.exceptions.ResourceNotFound;
 import app.models.Scooter;
+import app.models.Trip;
 import app.repositories.ScootersRepository;
 import app.repositories.TripsRepositoryJpa;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -93,6 +95,21 @@ public class ScooterController {
             return ResponseEntity.status(HttpStatus.CREATED).body(scootersRepo.save(scooter));
         }
     }
+
+//    @PostMapping("{id}/trips")
+//    public ResponseEntity<Object> addNewTrip(@PathVariable long id, @RequestBody Trip trip) {
+//        Scooter scooter = new Scooter();
+//        try {
+//            scooter = scootersRepo.findById(id);
+//
+//            if (scooter.getStatus() != Scooter.Status.IDLE && scooter.getBatteryCharge() < 10){
+//                return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("Scooter cannot be Idle or below 10% battery");
+//            }
+//        } catch (ResourceNotFound e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+//        }
+//
+//    }
 
     /**
      * Update a scooter.
