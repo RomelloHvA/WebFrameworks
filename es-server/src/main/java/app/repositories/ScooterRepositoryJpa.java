@@ -8,7 +8,9 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,6 +22,30 @@ public class ScooterRepositoryJpa implements ScootersRepository<Scooter> {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Component
+    public class MyCommandLineRunner  implements CommandLineRunner {
+
+        @Override
+        public void run(String... args) throws Exception {
+            System.out.println("Filling in some test data");
+            createInitialScooters();
+        }
+    }
+
+    private void createInitialScooters() throws ResourceNotFound {
+        List<Scooter> scooters = findAll();
+        if (scooters.size() > 0) {
+            System.out.println("There are already scooters in the test data");
+            return;
+        }
+        System.out.println("Generating scooters");
+        for (int i = 0; i < 11; i++) {
+            Scooter scooter = Scooter.createSampleScooter(0);
+            Scooter savedScooter = save(scooter);
+            System.out.println("Created scooter with id: " + savedScooter.getId());
+        }
+    }
 
     @Autowired
     private GPSLocationRepository gpsLocationRepository;
