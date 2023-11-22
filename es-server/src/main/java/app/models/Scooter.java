@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 @Entity
 @Table(name= "Scooter")
@@ -34,8 +37,32 @@ public class Scooter {
     private int mileage;
     @JsonView(Views.Summary.class) private int batteryCharge;
 
+    @OneToMany(mappedBy = "scooter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Trip> trips = new ArrayList<>();
+
     public Scooter() {
 
+    }
+
+    public boolean associateTrip(Trip trip){
+        //Check if already associated and do nothing.
+        if (trips.contains(trip)){
+            return false;
+            // If trip is not associated add to the list and change it in the trip aswell.
+        } else {
+            trips.add(trip);
+            trip.associateScooter(this);
+            return true;
+        }
+    }
+
+    public boolean dissociateTrip(Trip trip){
+        if (trips.contains(trip)){
+            trips.remove(trip);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public class Views {
@@ -43,6 +70,18 @@ public class Scooter {
 
         }
 
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<Trip> getTrips() {
+        return trips;
+    }
+
+    public void setTrips(List<Trip> trips) {
+        this.trips = trips;
     }
 
     /**
@@ -85,7 +124,6 @@ public class Scooter {
         scooter.setGPSLocation(GPSLocation.createRandomGPSLocation());
         scooter.setMileage((int) Math.round(Math.random() * 10000));
         scooter.setBatteryCharge((int) Math.floor(Math.random() * 95) + 5);
-
         return scooter;
     }
 

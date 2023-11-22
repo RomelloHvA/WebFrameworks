@@ -4,6 +4,7 @@ import app.exceptions.PreConditionFailed;
 import app.exceptions.ResourceNotFound;
 import app.models.Scooter;
 import app.repositories.ScootersRepository;
+import app.repositories.TripsRepositoryJpa;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,9 @@ public class ScooterController {
 
     @Autowired
     ScootersRepository<Scooter> scootersRepo;
+
+    @Autowired
+    TripsRepositoryJpa tripsRepositoryJpa;
 
 
     /**
