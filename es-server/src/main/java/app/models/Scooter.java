@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Entity
 @Table(name= "Scooter")
-public class Scooter {
+public class Scooter implements Identifiable {
     @JsonView(Views.Summary.class)
     @Column(name = "tag")
     private String tag;
@@ -27,7 +27,7 @@ public class Scooter {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private Long id;
+    private long id;
 
     @OneToOne(mappedBy = "scooter", cascade = CascadeType.ALL)
     private GPSLocation gpsLocation;
@@ -72,9 +72,6 @@ public class Scooter {
 
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public List<Trip> getTrips() {
         return trips;
@@ -139,6 +136,11 @@ public class Scooter {
         return result;
     }
 
+    @Override
+    public long getId() {
+        return id;
+    }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -183,9 +185,6 @@ public class Scooter {
         return batteryCharge;
     }
 
-    public Long getId() {
-        return id;
-    }
 
     @Override
     public String toString() {

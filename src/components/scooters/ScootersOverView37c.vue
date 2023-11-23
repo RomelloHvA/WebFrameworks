@@ -65,8 +65,6 @@ export default {
   components: { LoadingComponent, ErrorComponent },
   data() {
     return {
-      scooterStatus: Scooter.Status,
-      clonedScooter: null,
     }
   },
 
@@ -142,7 +140,7 @@ export default {
      */
 
     const handleNewScooterClick = async () => {
-      const {scooter, isPending, error, load } = await scooterService.asyncSave(new Scooter(0))
+      const {entity, isPending, error, load } = await scooterService.asyncSave(new Scooter(0))
 
       watchEffect(() => {
         newScooterIsPending.value = isPending.value;
@@ -151,8 +149,8 @@ export default {
 
       load().then( async () => {
         if(error.value === null){
-          await scooters.value.push(scooter.value)
-          await onSelect(scooter.value)
+          await scooters.value.push(entity.value)
+          await onSelect(entity.value)
         } else {
           $toast.error('Error while creating new scooter');
         }

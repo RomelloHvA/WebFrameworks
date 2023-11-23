@@ -8,10 +8,10 @@ import java.util.Random;
 
 @Entity
 @Table(name = "Trip")
-public class Trip {
+public class Trip implements Identifiable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private long id;
 
     @Column(name = "startTime")
     private LocalDate startTime;
@@ -88,14 +88,6 @@ public class Trip {
         this.scooter = scooter;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public LocalDate getStartTime() {
         return startTime;
     }
@@ -155,5 +147,15 @@ public class Trip {
     @Override
     public String toString() {
         return String.format("This trip belongs to scooter id: %d", scooter.getId());
+    }
+
+    @Override
+    public long getId() {
+        return 0;
+    }
+
+    @Override
+    public void setId(long id) {
+
     }
 }
