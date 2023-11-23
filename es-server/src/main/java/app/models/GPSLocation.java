@@ -5,22 +5,22 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "GPSLocation")
-public class GPSLocation {
+public class GPSLocation implements Identifiable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private Long id;
+    private long id;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "scooter_id", referencedColumnName = "id", nullable = false)
     @JsonBackReference
     private Scooter scooter;
 
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 

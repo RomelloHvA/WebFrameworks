@@ -2,11 +2,12 @@ package app.rest;
 
 import app.exceptions.PreConditionFailed;
 import app.exceptions.ResourceNotFound;
+import app.models.GPSLocation;
 import app.models.Scooter;
 import app.models.Trip;
-import app.repositories.ScootersRepository;
-import app.repositories.TripsRepositoryJpa;
+import app.repositories.*;
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
@@ -25,10 +26,15 @@ import java.util.List;
 public class ScooterController {
 
     @Autowired
-    ScootersRepository<Scooter> scootersRepo;
+//    ScootersRepository<Scooter> scootersRepo;
+    ScooterRepositoryJpa2 scootersRepo;
 
     @Autowired
-    TripsRepositoryJpa tripsRepositoryJpa;
+//    TripsRepositoryJpa tripsRepositoryJpa;
+    TripsRepositoryJpaGeneric tripsRepositoryJpa;
+
+    @Autowired
+    AbstractEntityRepositoryJpa<GPSLocation> gpsLocationRepositoryJpa;
 
 
     /**
@@ -88,10 +94,18 @@ public class ScooterController {
      * @author Romello ten Broeke
      */
     @PostMapping("{id}")
+    @Transactional
     public ResponseEntity<Object> addNewScooter(@PathVariable long id, @RequestBody Scooter scooter) throws PreConditionFailed, ResourceNotFound {
         if (id != scooter.getId()){
             throw new PreConditionFailed("ID in URL doesn't match the given scooter ID");
         } else {
+            if(scooter.getGpsLocation() != null){
+                GPSLocation gpsLocation = scooter.getGpsLocation();
+                gpsLocation = gpsLocationRepositoryJpa.save(gpsLocation);
+                scooter.setGpsLocation(gpsLocation);
+                System.out.println(scootersRepo.findById(id));
+                System.out.println(scooter);
+            }
             return ResponseEntity.status(HttpStatus.CREATED).body(scootersRepo.save(scooter));
         }
     }

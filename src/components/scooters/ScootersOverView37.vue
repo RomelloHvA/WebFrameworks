@@ -75,7 +75,7 @@ export default {
     const newScooterIsPending = ref(false)
     const newScooterError = ref(null)
     const selectedScooter = ref(null)
-    const $toast = useToast();
+    const $toast = useToast()
     const scooters = ref([])
     const isPending = ref(false)
     const error = ref(null)

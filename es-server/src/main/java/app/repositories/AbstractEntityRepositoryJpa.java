@@ -25,7 +25,7 @@ public abstract class AbstractEntityRepositoryJpa <E extends Identifiable> imple
 
     @Override
     public List<E> findAll() {
-        TypedQuery<E> query = this.entityManager.createQuery("select e from" + entityClass.getSimpleName() + " e", entityClass);
+        TypedQuery<E> query = this.entityManager.createQuery("select e from " + entityClass.getSimpleName() + " e", entityClass);
         return query.getResultList();
     }
 
@@ -35,12 +35,12 @@ public abstract class AbstractEntityRepositoryJpa <E extends Identifiable> imple
             E entity = entityManager.find(entityClass, id);
 
             if (entity == null) {
-                throw new ResourceNotFound("Scooter not found with id: " + id);
+                throw new ResourceNotFound( entityClass.getName() +" not found with id: " + id);
             }
 
             return entity;
         } catch (Exception e) {
-            throw new ResourceNotFound("Error finding Scooter with id: " + id, e);
+            throw new ResourceNotFound("Error finding " + entityClass.getName() +" with id: " + id, e);
         }
     }
 
@@ -55,7 +55,7 @@ public abstract class AbstractEntityRepositoryJpa <E extends Identifiable> imple
                 return entityManager.merge(entity);
             }
         } catch (Exception e) {
-            throw new ResourceNotFound("Error saving Scooter with id: " + entity.getId(), e);
+            throw new ResourceNotFound("Error saving " + entityClass.getName() +" with id: " + entity.getId(), e);
         }
     }
 
@@ -63,13 +63,13 @@ public abstract class AbstractEntityRepositoryJpa <E extends Identifiable> imple
     public boolean deleteById(long id) throws ResourceNotFound {
         E entity = entityManager.find(entityClass, id);
         if (entity == null) {
-            throw new ResourceNotFound("Scooter not found with id: " + id);
+            throw new ResourceNotFound(entityClass.getName() + " not found with id: " + id);
         }
         try {
             entityManager.remove(entity);
             return true;
         } catch (Exception e) {
-            throw new ResourceNotFound("Error deleting Scooter with id: " + id, e);
+            throw new ResourceNotFound("Error deleting " + entityClass.getName() +" with id: " + id, e);
         }
     }
 }
