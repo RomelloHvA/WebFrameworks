@@ -1,23 +1,84 @@
 package app.models;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
-public class Scooter {
+@Entity
+@Table(name= "Scooter")
+public class Scooter implements Identifiable {
     @JsonView(Views.Summary.class)
+    @Column(name = "tag")
+    private String tag;
+    @JsonView(Views.Summary.class)
+    @Column(name = "status")
+    private Status status;
+
+    public void setGpsLocation(GPSLocation gpsLocation) {
+        this.gpsLocation = gpsLocation;
+    }
+
+    @JsonView(Views.Summary.class)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private long id;
-    @JsonView(Views.Summary.class) private String tag;
-    @JsonView(Views.Summary.class) private Status status;
+
+    @OneToOne(mappedBy = "scooter", cascade = CascadeType.ALL)
     private GPSLocation gpsLocation;
+
+
+    @Column(name = "mileage")
     private int mileage;
     @JsonView(Views.Summary.class) private int batteryCharge;
+
+    @OneToMany(mappedBy = "scooter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Trip> trips = new ArrayList<>();
+
+    public Scooter() {
+
+    }
+
+    public boolean associateTrip(Trip trip){
+        //Check if already associated and do nothing.
+        if (trips.contains(trip)){
+            return false;
+            // If trip is not associated add to the list and change it in the trip aswell.
+        } else {
+            trips.add(trip);
+            trip.associateScooter(this);
+            return true;
+        }
+    }
+
+    public boolean dissociateTrip(Trip trip){
+        if (trips.contains(trip)){
+            trips.remove(trip);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public class Views {
         public static class Summary {
 
         }
 
+    }
+
+
+    public List<Trip> getTrips() {
+        return trips;
+    }
+
+    public void setTrips(List<Trip> trips) {
+        this.trips = trips;
     }
 
     /**
@@ -60,7 +121,6 @@ public class Scooter {
         scooter.setGPSLocation(GPSLocation.createRandomGPSLocation());
         scooter.setMileage((int) Math.round(Math.random() * 10000));
         scooter.setBatteryCharge((int) Math.floor(Math.random() * 95) + 5);
-
         return scooter;
     }
 
@@ -74,6 +134,11 @@ public class Scooter {
             counter += 1;
         }
         return result;
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 
     public void setId(long id) {
@@ -120,9 +185,6 @@ public class Scooter {
         return batteryCharge;
     }
 
-    public int getId() {
-        return (int) id;
-    }
 
     @Override
     public String toString() {

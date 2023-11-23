@@ -1,12 +1,14 @@
 package app.rest;
 
 import app.exceptions.PreConditionFailed;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import app.exceptions.ResourceNotFound;
 import app.models.Scooter;
+import app.models.Trip;
 import app.repositories.ScootersRepository;
+import app.repositories.TripsRepositoryJpa;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,10 @@ public class ScooterController {
 
     @Autowired
     ScootersRepository<Scooter> scootersRepo;
+
+    @Autowired
+    TripsRepositoryJpa tripsRepositoryJpa;
+
 
     /**
      * Get a list of test scooters.
@@ -63,8 +69,8 @@ public class ScooterController {
         Scooter scooter = scootersRepo.findById(id);
         if (scooter != null) {
             return ResponseEntity.ok(scooter);
-        } else{
-            throw new ResourceNotFound("Can't find scooter with Id:" + id);
+        } else {
+            return ResponseEntity.noContent().build();
         }
     }
 
@@ -82,12 +88,32 @@ public class ScooterController {
      * @author Romello ten Broeke
      */
     @PostMapping("{id}")
-    public ResponseEntity<Object> addNewScooter(@PathVariable long id, @RequestBody Scooter scooter) throws PreConditionFailed {
+    public ResponseEntity<Object> addNewScooter(@PathVariable long id, @RequestBody Scooter scooter) throws PreConditionFailed, ResourceNotFound {
         if (id != scooter.getId()){
             throw new PreConditionFailed("ID in URL doesn't match the given scooter ID");
         } else {
             return ResponseEntity.status(HttpStatus.CREATED).body(scootersRepo.save(scooter));
         }
+    }
+
+    @PostMapping("{id}/trips")
+    public ResponseEntity<Object> addNewTrip(@PathVariable long id, @RequestBody Trip trip) {
+        Scooter scooter = new Scooter();
+        try {
+            scooter = scootersRepo.findById(id);
+
+            if (scooter.getStatus() != Scooter.Status.IDLE || scooter.getBatteryCharge() < 10){
+                return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("Scooter cannot be Idle or below 10% battery");
+            }
+
+            if (scooter.associateTrip(trip)){
+                tripsRepositoryJpa.save(trip);
+            }
+
+        } catch (ResourceNotFound e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body("Trip has been added");
     }
 
     /**
@@ -100,7 +126,7 @@ public class ScooterController {
      * @author Romello ten Broeke
      */
     @PutMapping("{id}")
-    public ResponseEntity<Object> updateScooter(@PathVariable long id, @RequestBody Scooter scooter) throws PreConditionFailed {
+    public ResponseEntity<Object> updateScooter(@PathVariable long id, @RequestBody Scooter scooter) throws PreConditionFailed, ResourceNotFound {
 
         if (id != scooter.getId()){
             throw new PreConditionFailed("ID in URL doesn't match the given scooter ID");
@@ -124,7 +150,7 @@ public class ScooterController {
      * @author Romello ten Broeke
      */
     @DeleteMapping("{id}")
-    public ResponseEntity<Object> deleteScooter(@PathVariable long id) {
+    public ResponseEntity<Object> deleteScooter(@PathVariable long id) throws ResourceNotFound {
         if (scootersRepo.findById(id) == null) {
             Exception exception = new ResourceNotFound("Id not found:" +id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
