@@ -5,6 +5,7 @@ import app.models.Scooter;
 import app.models.Trip;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -23,6 +24,21 @@ public class TripsRepositoryJpa2 implements TripRepository<Trip>{
     public List<Trip> findAll() {
         TypedQuery<Trip> query = this.entityManager.createQuery("select t from Trip t", Trip.class);
         return query.getResultList();
+    }
+
+    @Override
+    public List<Trip> findByQuery(String jpqlName, Object... params) {
+        Query q = entityManager.createNamedQuery(jpqlName, Trip.class);
+        for (int i = 0; i < params.length; i++) {
+            q.setParameter(i+1, params[i]);
+        }
+        return q.getResultList();
+
+    }
+
+    @Override
+    public List<Trip> findAllByScooter_Id(Long id) {
+        return entityManager.find(Scooter.class, id).getTrips();
     }
 
     @Override

@@ -11,11 +11,14 @@ import java.util.Set;
 
 @Entity
 @Table(name= "Scooter")
+@NamedQuery(name = "Scooter_find_by_status", query = "SELECT s FROM Scooter s WHERE s.status = ?1")
+@NamedQuery(name = "Scooter_find_by_battery", query = "SELECT s FROM Scooter s WHERE s.batteryCharge <= ?1")
 public class Scooter implements Identifiable {
     @JsonView(Views.Summary.class)
     @Column(name = "tag")
     private String tag;
     @JsonView(Views.Summary.class)
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
 

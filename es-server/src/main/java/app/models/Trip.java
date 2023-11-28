@@ -8,6 +8,7 @@ import java.util.Random;
 
 @Entity
 @Table(name = "Trip")
+@NamedQuery(name = "Trip_find_by_scooterId_and_period", query = "SELECT t FROM Trip t WHERE t.scooter.id = ?1 AND t.startTime >= ?2 AND t.endTime <= ?3")
 public class Trip implements Identifiable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -151,11 +152,11 @@ public class Trip implements Identifiable {
 
     @Override
     public long getId() {
-        return 0;
+        return id;
     }
 
     @Override
     public void setId(long id) {
-
+        this.id = id;
     }
 }

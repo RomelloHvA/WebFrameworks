@@ -35,6 +35,12 @@ public class ScootersRepositoryMock implements ScootersRepository{
     public List findAll() {
         return scooters;
     }
+
+    @Override
+    public List<Scooter> findByQuery(String jpqlName, Object... params) {
+        return null;
+    }
+
     /**
      * Method for finding a given Id. This method should be implemented whenever a scooter is added to the list.
      * @param id is the Id to find before being able to add to the scooterslist

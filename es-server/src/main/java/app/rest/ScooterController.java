@@ -10,10 +10,13 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -27,11 +30,11 @@ public class ScooterController {
 
     @Autowired
 //    ScootersRepository<Scooter> scootersRepo;
-    ScooterRepositoryJpa2 scootersRepo;
+    ScooterRepositoryJpa scootersRepo;
 
     @Autowired
 //    TripsRepositoryJpa tripsRepositoryJpa;
-    TripsRepositoryJpaGeneric tripsRepositoryJpa;
+    TripsRepositoryJpa2 tripsRepositoryJpa;
 
     @Autowired
     AbstractEntityRepositoryJpa<GPSLocation> gpsLocationRepositoryJpa;
@@ -58,8 +61,43 @@ public class ScooterController {
      * @author Marco de Boer
      */
     @GetMapping(path = "all",produces = "application/json")
-    public List<Scooter> getAllScooters() {
-        return scootersRepo.findAll();
+    public ResponseEntity<?> getAllScooters(
+            @RequestParam(name = "battery", required = false) Integer battery,
+            @RequestParam(name = "status", required = false) String status) {
+        if (battery != null) {
+            return ResponseEntity.ok(scootersRepo.findByQuery("Scooter_find_by_battery", battery));
+        } else if (status != null) {
+            try {
+                Scooter.Status statusEnum = Scooter.Status.valueOf(status.toUpperCase());
+                return ResponseEntity.ok(scootersRepo.findByQuery("Scooter_find_by_status", statusEnum));
+
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body("Invalid status value: " + status);
+            }
+        } else {
+            return ResponseEntity.ok(scootersRepo.findAll());
+        }
+    }
+
+    /**
+     * Get all scooters that are currently available.
+     * @param id The ID of the scooter to find
+     * @param from The start date of the period to find trips for
+     * @param to The end date of the period to find trips for
+     * @return A list of all trips for the scooter with the given ID in JSON format
+     * @author Marco de Boer
+     */
+    @GetMapping(path = "{id}/trips", produces = "application/json")
+    public ResponseEntity<Object> getTripsByScooterId (
+            @PathVariable long id,
+            @RequestParam(name = "from", required = false) LocalDate from,
+            @RequestParam(name = "to", required = false) LocalDate to)
+    {
+        if (from != null && to != null) {
+            return ResponseEntity.ok(tripsRepositoryJpa.findByQuery("Trip_find_by_scooterId_and_period", id, from, to));
+        }
+
+        return ResponseEntity.ok(tripsRepositoryJpa.findAllByScooter_Id(id));
     }
 
     /**
@@ -111,7 +149,9 @@ public class ScooterController {
     }
 
     @PostMapping("{id}/trips")
-    public ResponseEntity<Object> addNewTrip(@PathVariable long id, @RequestBody Trip trip) {
+    public ResponseEntity<Object> addNewTrip(
+            @PathVariable long id,
+            @RequestBody Trip trip){
         Scooter scooter = new Scooter();
         try {
             scooter = scootersRepo.findById(id);
