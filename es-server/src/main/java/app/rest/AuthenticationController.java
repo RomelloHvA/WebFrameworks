@@ -2,14 +2,23 @@ package app.rest;
 
 import app.exceptions.NotAcceptableException;
 import app.models.User;
+import app.utility.APIConfig;
+import app.utility.JWToken;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/authentication")
 public class AuthenticationController {
+
+    @Autowired
+    private APIConfig apiConfig;
 
     @PostMapping("login")
     public ResponseEntity<Object> login(@RequestBody ObjectNode user){
@@ -32,7 +41,16 @@ public class AuthenticationController {
                 newUser.setRandomId();
                 newUser.setEmail(email);
                 newUser.setHashedPassword(password);
-                return ResponseEntity.accepted().body(newUser);
+                if (user.has("role") && Objects.equals(user.get("role").asText(), "admin")){
+                    newUser.setRole(user.get("role").asText());
+                } else {
+                    newUser.setRole("guest");
+                }
+
+                JWToken jwToken = new JWToken(newUser.getName(), newUser.getId(), newUser.getRole());
+                String tokenString = jwToken.encode(apiConfig.getJwtIssuer(), apiConfig.getJwtPassphrase(),
+                        (int) apiConfig.getJwtExpirationTime());
+                return ResponseEntity.accepted().header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenString).body(newUser);
             }else {
                 throw new NotAcceptableException("Password and email fields not matching.");
             }
