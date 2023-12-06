@@ -8,9 +8,11 @@ import java.security.Key;
 import java.util.Date;
 
 public class JWToken {
+    public static final String JWT_ATTRIBUTE_NAME = "";
     private static final String JWT_CALLNAME_CLAIM = "sub";
     private static final String JWT_USERID_CLAIM = "id";
     private static final String JWT_ROLE_CLAIM = "role";
+    private static final String JWT_IPADRESS_CLAIM = "ip";
 
     private String callName;
     private Long userId;
@@ -20,6 +22,26 @@ public class JWToken {
         this.callName = callName;
         this.userId = userId;
         this.role = role;
+    }
+
+    public static JWToken decode(String token, String jwtPassphrase)
+            throws ExpiredJwtException, MalformedJwtException {
+        Key key = getKey(jwtPassphrase);
+        Jws<Claims> jws = Jwts.parserBuilder().setSigningKey(key).build()
+                .parseClaimsJws(token);
+        Claims claims = jws.getBody();
+
+        JWToken jwToken = new JWToken(
+                claims.get(JWT_CALLNAME_CLAIM).toString(),
+                Long.valueOf(claims.get(JWT_USERID_CLAIM).toString()),
+                claims.get(JWT_ROLE_CLAIM).toString()
+        );
+        jwToken.setIpAdress((String) claims.get(JWT_IPADRESS_CLAIM));
+        return jwToken;
+    }
+
+    private void setIpAdress(String s) {
+
     }
 
     public String encode(String issuer, String passphrase, int expiration) {
