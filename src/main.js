@@ -5,8 +5,8 @@ import './main.css';
 import router from './router';
 import ToastPlugin from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-bootstrap.css';
-import AppComponent37c from "@/AppComponent37c";
+import AppComponent44 from "@/AppComponent44";
 
-createApp(AppComponent37c).use(router).use(ToastPlugin).mount("#app");
+createApp(AppComponent44).use(router).use(ToastPlugin).mount("#app");
 
 
