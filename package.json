@@ -11,9 +11,11 @@
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.1",
     "core-js": "^3.8.3",
+    "fetch-intercept": "^2.4.0",
     "vue": "^3.2.13",
     "vue-router": "^4.2.5",
-    "vue-toast-notification": "^3.1.1"
+    "vue-toast-notification": "^3.1.1",
+    "whatwg-fetch": "^3.6.20"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
