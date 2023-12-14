@@ -137,13 +137,13 @@ public class ScooterController {
         if (id != scooter.getId()){
             throw new PreConditionFailed("ID in URL doesn't match the given scooter ID");
         } else {
-            if(scooter.getGpsLocation() != null){
-                GPSLocation gpsLocation = scooter.getGpsLocation();
-                gpsLocation = gpsLocationRepositoryJpa.save(gpsLocation);
-                scooter.setGpsLocation(gpsLocation);
-                System.out.println(scootersRepo.findById(id));
-                System.out.println(scooter);
-            }
+//            if(scooter.getGpsLocation() != null){
+//                GPSLocation gpsLocation = scooter.getGpsLocation();
+////                gpsLocation = gpsLocationRepositoryJpa.save(gpsLocation);
+////                scooter.setGpsLocation(gpsLocation);
+//                System.out.println(gpsLocation);
+////                System.out.println(scooter);
+//            }
             return ResponseEntity.status(HttpStatus.CREATED).body(scootersRepo.save(scooter));
         }
     }

@@ -29,11 +29,16 @@
 import { inject, ref, onBeforeMount } from 'vue'
 import router from '@/router';
 import { useRoute } from 'vue-router';
+
 const email = ref('')
 const password = ref('')
 const loginerror = ref(false)
 const route = useRoute()
+const SessionSbService = inject('SessionSbService')
 
+/**
+ * If the user is already logged in, redirect to home
+ */
 onBeforeMount(() => {
     if (route.query.signOut) {
         SessionSbService.signOut()
@@ -41,8 +46,9 @@ onBeforeMount(() => {
     }
 })
 
-const SessionSbService = inject('SessionSbService')
-
+/**
+ * Handle the login process and redirect to the returnTo query param or home
+ */
 const handleLogin = async () => {
     const {user, status} = await SessionSbService.asyncSignIn(email.value, password.value)
 
@@ -50,7 +56,7 @@ const handleLogin = async () => {
         loginerror.value = true
     } else {
         loginerror.value = false
-        router.push(route.query.redirect || '/');
+        router.push(route.query.returnTo || '/');
     }
 }
 

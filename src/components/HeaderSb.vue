@@ -44,7 +44,7 @@ export default {
     
   },
   watch: {
-    // Watch the reactive property in your service
+    //watch for changes in the user object
     'SessionSbService.user.value': function(newValue) {
       this.user = newValue;
     }
