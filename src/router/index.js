@@ -12,6 +12,7 @@ import ScootersDetail37 from "@/components/scooters/ScootersDetail37";
 import NoScooterSelectedComponent from "@/components/scooters/NoScooterSelectedComponent";
 import ScootersOverView37c from "@/components/scooters/ScootersOverView37c";
 import ScootersDetail37c from "@/components/scooters/ScootersDetail37c";
+import LoginComponent from "@/components/LoginComponent";
 
 export const routes = [
   {
@@ -101,6 +102,17 @@ export const routes = [
     name: 'scooters',
     component: null
 
+  },
+  {
+    path: '/sign-in',
+    name: 'login',
+    component: LoginComponent
+  },
+  {
+    path: '/sign-out',
+    redirect: '/sign-in?signOut=true',
+    name: 'logout',
+    component: null
   }
 
 

@@ -1,24 +1,24 @@
 <template>
 
-  <HeaderComponent/>
-  <NavBar />
-  <router-view/>
+  <HeaderSb/>
+  <NavBarSb />
+  <router-view class="vh-100"/>
 
 
 </template>
 
 <script>
-import HeaderComponent from "@/components/HeaderComponent";
-import NavBar from "@/components/NavBar";
 import CONFIG from "@/app-config"
 import {Scooter} from "@/models/Scooter";
 import {ScootersAdaptor} from "@/services/ScootersAdaptor";
 import {CachedRESTAdaptorWithFetch} from "@/services/CachedRESTAdaptorWithFetch";
 import {SessionSbService} from "@/services/SessionSbService";
+import HeaderSb from "@/components/HeaderSb.vue";
+import NavBarSb from "./components/NavBarSb.vue";
 
 export default {
   name: "AppComponent44",
-  components: { HeaderComponent, NavBar },
+  components: { HeaderSb, NavBarSb },
   provide() {
     return {
       scootersService: new ScootersAdaptor(CONFIG.BACKEND_URL + '/scooters'),

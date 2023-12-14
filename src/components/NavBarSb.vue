@@ -38,9 +38,12 @@
                     </li>
                 </ul>
                 <div class="justify-content-end">
-                   <div class="d-flex gap-2">
+                    <div v-if="isLoggedIn" class="d-flex gap-2">
+                        <router-link to="/sign-out"><button type="button row" class="btn btn-outline-light">Log out</button></router-link>
+                    </div>
+                   <div v-else class="d-flex gap-2">
                         <router-link to="/sign-up"><button type="button row" class="btn btn-outline-primary">Sign up</button></router-link>
-                        <router-link to="/login"><button type="button row" class="btn btn-outline-light">Login</button></router-link>
+                        <router-link :to="signInLink"><button type="button row" class="btn btn-outline-light">Login</button></router-link>
                     </div>
                 </div>
             </div>
@@ -48,12 +51,27 @@
     </nav>
 </template>
 
-<script>
+<script setup>
+import { inject, ref, computed, watchEffect } from 'vue'
+import { useRoute } from 'vue-router';
+const SessionSbService = inject('SessionSbService')
+const user = ref(null);
+const route = useRoute()
 
-export default {
-    name: "NavBar",
+watchEffect(() => {
+    user.value = SessionSbService.user.value
+})
 
-}
+user.value = SessionSbService.getUserFromBrowserStorage()
+
+const isLoggedIn = computed(() => {
+    return user.value !== null;
+});
+
+const signInLink = computed(() => {
+    return {path: '/sign-in', query: {returnTo: route.fullPath}}
+});
+
 </script>
 
 <style>
