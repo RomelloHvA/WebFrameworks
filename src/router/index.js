@@ -13,6 +13,7 @@ import NoScooterSelectedComponent from "@/components/scooters/NoScooterSelectedC
 import ScootersOverView37c from "@/components/scooters/ScootersOverView37c";
 import ScootersDetail37c from "@/components/scooters/ScootersDetail37c";
 import LoginComponent from "@/components/LoginComponent";
+import tripsOverview45 from "@/components/trips/TripsOverview45";
 
 export const routes = [
   {
@@ -102,6 +103,11 @@ export const routes = [
     name: 'scooters',
     component: null
 
+  },
+  {
+    path: '/trips/history',
+    name: 'tripsOverview45',
+    component: tripsOverview45
   },
   {
     path: '/sign-in',

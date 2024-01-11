@@ -30,8 +30,11 @@
                             <li><a class="dropdown-item" href="#">Abandoned Scooters</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">My Trips</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">My Trips</a>
+                        <ul class="dropdown-menu bg-dark">
+                          <li><router-link exact-active-class="dropdown-item-active" :to=" { name: 'tripsOverview45' }" class="dropdown-item">history</router-link></li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">My Account</a>

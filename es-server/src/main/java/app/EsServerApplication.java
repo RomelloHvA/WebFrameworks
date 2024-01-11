@@ -69,6 +69,9 @@ public class EsServerApplication implements CommandLineRunner {
 
 			for (int j = 0; j < 5; j++) {
 				Trip trip = Trip.createSampleTrip();
+				if(j%2 == 0){
+					trip.setEndPosition(null);
+				}
 				if (scooter.associateTrip(trip)){
 					tripsRepositoryJpa2.save(trip);
 				}

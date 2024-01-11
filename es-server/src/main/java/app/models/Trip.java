@@ -18,14 +18,23 @@ public class Trip implements Identifiable {
     private LocalDate startTime;
     @Column(name = "endTime")
     private LocalDate endTime;
-    @Column(name = "startPosition")
-    private String startPosition;
-    @Column(name = "endPosition")
-    private String endPosition;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "start_position_id")
+    private GPSLocation startPosition;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "end_position")
+    private GPSLocation endPosition;
     @Column(name = "mileage")
     private int mileage;
     @Column(name = "cost")
     private double cost;
+
+    @Transient
+    public boolean isActive() {
+        return endPosition == null;
+    }
 
     @ManyToOne
     @JoinColumn(name = "scooter_id")
@@ -36,8 +45,8 @@ public class Trip implements Identifiable {
         final Random RANDOM = new Random();
         LocalDate startTime = LocalDate.now().plusDays(RANDOM.nextInt(30)); // Up to 30 days in the future
         LocalDate endTime = startTime.plusDays(RANDOM.nextInt(10) + 1); // 1 to 10 days duration
-        String startPosition = "Start" + (RANDOM.nextDouble(50.000));
-        String endPosition = "End" + (RANDOM.nextDouble(20.000, 50.000));
+        GPSLocation startPosition = GPSLocation.createRandomGPSLocation();
+        GPSLocation endPosition =  GPSLocation.createRandomGPSLocation();
         int mileage = RANDOM.nextInt(100);
         double cost = RANDOM.nextDouble() * 50.0; // Up to $50.0
 
@@ -69,7 +78,7 @@ public class Trip implements Identifiable {
     public Trip() {
     }
 
-    public Trip(LocalDate startTime, LocalDate endTime, String startPosition, String endPosition, int mileage, double cost) {
+    public Trip(LocalDate startTime, LocalDate endTime, GPSLocation startPosition, GPSLocation endPosition, int mileage, double cost) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.startPosition = startPosition;
@@ -78,7 +87,7 @@ public class Trip implements Identifiable {
         this.cost = cost;
     }
 
-    public Trip(Long id, LocalDate startTime, LocalDate endTime, String startPosition, String endPosition, int mileage, double cost, Scooter scooter) {
+    public Trip(Long id, LocalDate startTime, LocalDate endTime, GPSLocation startPosition, GPSLocation endPosition, int mileage, double cost, Scooter scooter) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -105,19 +114,19 @@ public class Trip implements Identifiable {
         this.endTime = endTime;
     }
 
-    public String getStartPosition() {
+    public GPSLocation getStartPosition() {
         return startPosition;
     }
 
-    public void setStartPosition(String startPosition) {
+    public void setStartPosition(GPSLocation startPosition) {
         this.startPosition = startPosition;
     }
 
-    public String getEndPosition() {
+    public GPSLocation getEndPosition() {
         return endPosition;
     }
 
-    public void setEndPosition(String endPosition) {
+    public void setEndPosition(GPSLocation endPosition) {
         this.endPosition = endPosition;
     }
 

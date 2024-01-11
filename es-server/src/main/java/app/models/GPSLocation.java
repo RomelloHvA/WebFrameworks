@@ -11,7 +11,7 @@ public class GPSLocation implements Identifiable {
     @Column(name = "id")
     private long id;
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "scooter_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "scooter_id", referencedColumnName = "id", nullable = true)
     @JsonBackReference
     private Scooter scooter;
 
