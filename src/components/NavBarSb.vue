@@ -72,7 +72,10 @@ const isLoggedIn = computed(() => {
 });
 
 const signInLink = computed(() => {
-    return {path: '/sign-in', query: {returnTo: route.fullPath}}
+    if (route.path !== '/sign-in') {
+        return { path: '/sign-in', query: { returnTo: route.fullPath } };
+    }
+    return {path: '/sign-in'};
 });
 
 </script>

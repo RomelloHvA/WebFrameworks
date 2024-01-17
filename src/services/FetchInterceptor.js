@@ -25,7 +25,8 @@ export class FetchInterceptor {
     }
 
     /**
-     * 
+     * All fetch requests are intercepted by this method.
+     * It adds the Authorization header to all requests.
      * @param {String} url the url of the request
      * @param {Object} options  the options of the request
      * @returns the url and the options of the request 
@@ -48,14 +49,14 @@ export class FetchInterceptor {
     }
     // requestError(error){}
     /**
-     * 
+     * This method intercepts all fetch responses.
+     * It redirects to the sign-in page if the response status is 401.
      * @param {*} response the response of the request
      * @returns the response of the request 
      */
     response(response){
         if (response.status === 401) {
-            console.log(window.location)
-            FetchInterceptor.theInstance.router.push('/sign-in');
+            FetchInterceptor.theInstance.router.push('/sign-out');
         }
         return response;
     }
